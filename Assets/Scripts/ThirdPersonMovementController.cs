@@ -1,19 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using BeardedManStudios.Forge.Networking.Generated;
 
 public class ThirdPersonMovementController : MonoBehaviour
 {
-	[SerializeField] float jumpPower = 5f;
-	//[SerializeField] float gravity = 9.81f;
-
-	//private bool hasJumped = false;
+	[SerializeField] float walkSpeed = 10f;
+	[SerializeField] float jumpPower = 350f;
 
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
+		//GetComponent<Player>().SetAxisDataFromPlayer(0, 0);
+	}
 
 	private void Update()
 	{
@@ -32,17 +31,16 @@ public class ThirdPersonMovementController : MonoBehaviour
 		float horizontalMovement = Input.GetAxis("Horizontal");
 		float verticalMovement = Input.GetAxis("Vertical");
 
+		Debug.Log("Player ver: " + verticalMovement + " Player horz: " + horizontalMovement);
 
-
-		/*
-		Vector3 forwardVector = transform.forward * verticalMovement;
-		Vector3 sidewaysVector = transform.right * horizontalMovement;
+		Vector3 forwardVector = transform.forward * verticalMovement * walkSpeed;
+		Vector3 sidewaysVector = transform.right * horizontalMovement * walkSpeed;
 
 		Vector3 playerMovement = forwardVector + sidewaysVector;
 		Rigidbody myRigidbody = GetComponent<Rigidbody>();
 		playerMovement.y = myRigidbody.velocity.y;
 
-		myRigidbody.velocity = playerMovement;*/
+		myRigidbody.velocity = playerMovement;
 	}
 
 	private void PlayerJump()
@@ -51,7 +49,7 @@ public class ThirdPersonMovementController : MonoBehaviour
 
 		Ray ray = new Ray(transform.position, -Vector3.up);
 		RaycastHit hitInfo;
-		Debug.Log(Physics.Raycast(ray, out hitInfo, 1.2f));
+		Debug.Log(Physics.Raycast(ray, out hitInfo, 1.1f));
 		if (Physics.Raycast(ray, out hitInfo, 1.1f))
 		{
 			if (hitInfo.collider.gameObject.GetComponent<Player>()) return;

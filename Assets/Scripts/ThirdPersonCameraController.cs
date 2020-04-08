@@ -49,7 +49,6 @@ public class ThirdPersonCameraController : MonoBehaviour
 		transform.LookAt(target);
 
 		target.rotation = Quaternion.Euler(mouseY, mouseX, 0);
-
-		player.GetComponent<Player>().SetMouseX(mouseX);
+		player.rotation = Quaternion.Euler(0, mouseX, 0);
 	}
 }

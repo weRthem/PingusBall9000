@@ -469,6 +469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerCameraTransform: {fileID: 1602895971504682319}
   namePlate: {fileID: 8893402690698677834}
+  walkSpeed: 10
 --- !u!114 &1602895972268583713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,8 +482,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34d43c86c36f68a4bb122db5f319e2db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 8
-  jumpPower: 370
+  walkSpeed: 5
+  jumpPower: 375
 --- !u!1 &1602895972314077459
 GameObject:
   m_ObjectHideFlags: 0

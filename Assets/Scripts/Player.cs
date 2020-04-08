@@ -22,15 +22,13 @@ public class Player : PlayerBehavior
 		base.NetworkStart();
 
 		NetworkManager.Instance.Networker.disconnected += OnDisconnected;
-		networkObject.UpdateInterval = 17;
+		//networkObject.UpdateInterval = 17;
 
 		if (!networkObject.IsOwner)
 		{
 			transform.GetChild(0).gameObject.SetActive(false);
-
+			transform.GetChild(4).gameObject.SetActive(false);
 			GetComponent<ThirdPersonMovementController>().enabled = false;
-			// TODO set it up so the server keeps the rigidbody and the player sends velocity data to the server but only transform data to the clients
-
 			Destroy(GetComponent<Rigidbody>());
 		}
 		else
@@ -39,7 +37,19 @@ public class Player : PlayerBehavior
 			GetPlayerName();
 		}
 
+	}
 
+	private void Update()
+	{
+		if (!networkObject.IsOwner)
+		{
+			transform.position = networkObject.position;
+			transform.rotation = networkObject.rotation;
+			return;
+		}
+
+		networkObject.position = transform.position;
+		networkObject.rotation = transform.rotation;
 	}
 
 	public void GetPlayerName()
@@ -49,37 +59,6 @@ public class Player : PlayerBehavior
 		Name = PlayerPrefs.GetString("PlayerName");
 
 		networkObject.SendRpc(RPC_UPDATE_NAME, Receivers.AllBuffered, Name);
-	}
-
-    // Update is called once per frame
-    void Update()
-    {
-		if (!networkObject.IsServer)
-		{
-			transform.position = networkObject.position;
-			transform.rotation = networkObject.rotation;
-			return;
-		}
-
-		networkObject.position = transform.position;
-		networkObject.rotation = transform.rotation;
-		
-    }
-
-	private void FixedUpdate()
-	{
-		if (!networkObject.IsServer) return;
-
-		Vector3 forwardVector = transform.forward * networkObject.verticalAxis;
-		Vector3 sidewaysVector = transform.right * networkObject.horizontalAxis;
-
-		Vector3 playerMovement = forwardVector + sidewaysVector;
-		Rigidbody myRigidbody = GetComponent<Rigidbody>();
-		playerMovement.y = myRigidbody.velocity.y;
-
-		myRigidbody.velocity = playerMovement * walkSpeed;
-
-		transform.rotation = Quaternion.Euler(0, networkObject.mouseX, 0);
 	}
 
 	public override void updateName(RpcArgs args)
@@ -114,16 +93,5 @@ public class Player : PlayerBehavior
 			NetworkManager.Instance.Disconnect();
 			Cursor.lockState = CursorLockMode.None;
 		});
-	}
-
-	public void SetMouseX(float mouseX)
-	{
-		networkObject.mouseX = mouseX;
-	}
-
-	public void SetAxisDataFromPlayer(float xAxis, float yAxis)
-	{
-		networkObject.verticalAxis = yAxis;
-		networkObject.horizontalAxis = xAxis;
 	}
 }

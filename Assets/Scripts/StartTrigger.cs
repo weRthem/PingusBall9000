@@ -17,9 +17,9 @@ public class StartTrigger : MonoBehaviour
 		if (!NetworkManager.Instance.IsServer) return;
 		if (other.GetComponent<Player>() == null) return;
 
-		//GameBall ball = NetworkManager.Instance.InstantiateGameBall() as GameBall;
+		GameBall ball = NetworkManager.Instance.InstantiateGameBall() as GameBall;
 
-		//ball.Reset();
+		ball.Reset();
 
 		Destroy(gameObject);
 	}

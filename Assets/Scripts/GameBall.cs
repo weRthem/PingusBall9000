@@ -5,7 +5,7 @@ using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking.Unity;
 
-public class GameBall : MonoBehaviour //GameBallBehavior
+public class GameBall : GameBallBehavior
 {
 	private ulong updateTime = 17;
 	private Rigidbody rigidbodyRef = null;
@@ -16,38 +16,34 @@ public class GameBall : MonoBehaviour //GameBallBehavior
     {
 		rigidbodyRef = GetComponent<Rigidbody>();
 		gameLogic = GameLogic.Instance;
-		//networkObject.UpdateInterval = updateTime;
+		networkObject.UpdateInterval = updateTime;
 
-		//if (!networkObject.IsServer) {
-		//	Destroy(GetComponent<Rigidbody>());
-		//}
+		if (!networkObject.IsServer) {
+			Destroy(GetComponent<Rigidbody>());
+		}
 	}
 
     // Update is called once per frame
     void Update()
     {
-		//if (!networkObject.IsOwner)
+		if (!networkObject.IsOwner)
 		{
-		//	transform.position = networkObject.position;
-		//	transform.rotation = networkObject.rotation;
+			transform.position = networkObject.position;
+			transform.rotation = networkObject.rotation;
 			return;
 		}
 		
-		//networkObject.rotation = transform.rotation;
-		//networkObject.position = transform.position;
+		networkObject.rotation = transform.rotation;
+		networkObject.position = transform.position;
     }
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		//if (!networkObject.IsServer) return;
+		if (!networkObject.IsServer) return;
 
 		if (collision.gameObject.GetComponent<Player>() == null) return;
 
-		//if (collision.gameObject.GetComponent<Player>().networkObject.IsOwner) return;
-
-		Debug.Log(collision.gameObject.GetComponent<Player>().Name);
-
-		Debug.Log("Adding force equal to: " + collision.gameObject.GetComponent<Player>().PlayerVelocity);
+		if (collision.gameObject.GetComponent<Player>().networkObject.IsOwner) return;
 
 		// try crossing the balls pos with the playerVelocity?
 		//Vector3 relativeForceIdea = Vector3.Cross(transform.position, collision.transform.position) + collision.gameObject.GetComponent<Player>().PlayerVelocity;

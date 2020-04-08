@@ -6,7 +6,7 @@ using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking.Unity;
 
-public class GameLogic : MonoBehaviour //GameLogicBehavior
+public class GameLogic : GameLogicBehavior
 {
 	[SerializeField] Text scoreLabel;
 
@@ -16,16 +16,16 @@ public class GameLogic : MonoBehaviour //GameLogicBehavior
     {
 		QualitySettings.vSyncCount = 1;
 		Instance = this;
-		//NetworkManager.Instance.InstantiatePlayer(position: new Vector3(0, 5, 0));
-		//NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;
+		NetworkManager.Instance.InstantiatePlayer(position: new Vector3(0, 7, 0));
+		NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;
     }
 
-	//public override void PlayerScored(RpcArgs args)
-	//{
-	//	string playerName = args.GetNext<string>();
+	public override void PlayerScored(RpcArgs args)
+	{
+		string playerName = args.GetNext<string>();
 
-	//	scoreLabel.text = playerName + " scored the last point";
-	//}
+		scoreLabel.text = playerName + " scored the last point";
+	}
 
 	private void DisconnectPlayer(NetworkingPlayer player, NetWorker sender)
 	{
