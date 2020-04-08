@@ -4,15 +4,12 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"string\"][\"float\", \"float\", \"float\"][\"Vector3\", \"Quaternion\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\"][\"mouseX\", \"horizontalAxis\", \"verticalAxis\"][\"position\", \"rotation\"]]")]
-	public abstract partial class PlayerBehavior : NetworkBehavior
+	[GeneratedRPC("{\"types\":[]")]
+	[GeneratedRPCVariableNames("{\"types\":[]")]
+	public abstract partial class PlayerServerBehavior : NetworkBehavior
 	{
-		public const byte RPC_UPDATE_NAME = 0 + 5;
-		public const byte RPC_SEND_PLAYERS_INPUT_DATA = 1 + 5;
-		public const byte RPC_SET_PLAYERS_POS_AND_ROT = 2 + 5;
 		
-		public PlayerNetworkObject networkObject = null;
+		public PlayerServerNetworkObject networkObject = null;
 
 		public override void Initialize(NetworkObject obj)
 		{
@@ -20,13 +17,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (networkObject != null && networkObject.AttachedBehavior != null)
 				return;
 			
-			networkObject = (PlayerNetworkObject)obj;
+			networkObject = (PlayerServerNetworkObject)obj;
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("updateName", updateName, typeof(string));
-			networkObject.RegisterRpc("SendPlayersInputData", SendPlayersInputData, typeof(float), typeof(float), typeof(float));
-			networkObject.RegisterRpc("SetPlayersPosAndRot", SetPlayersPosAndRot, typeof(Vector3), typeof(Quaternion));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -84,7 +78,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public override void Initialize(NetWorker networker, byte[] metadata = null)
 		{
-			Initialize(new PlayerNetworkObject(networker, createCode: TempAttachCode, metadata: metadata));
+			Initialize(new PlayerServerNetworkObject(networker, createCode: TempAttachCode, metadata: metadata));
 		}
 
 		private void DestroyGameObject(NetWorker sender)
@@ -95,7 +89,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public override NetworkObject CreateNetworkObject(NetWorker networker, int createCode, byte[] metadata = null)
 		{
-			return new PlayerNetworkObject(networker, this, createCode, metadata);
+			return new PlayerServerNetworkObject(networker, this, createCode, metadata);
 		}
 
 		protected override void InitializedTransform()
@@ -103,24 +97,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.SnapInterpolations();
 		}
 
-		/// <summary>
-		/// Arguments:
-		/// string playerName
-		/// </summary>
-		public abstract void updateName(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// float mouseX
-		/// float horizontalAxis
-		/// float verticalAxis
-		/// </summary>
-		public abstract void SendPlayersInputData(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// Vector3 position
-		/// Quaternion rotation
-		/// </summary>
-		public abstract void SetPlayersPosAndRot(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

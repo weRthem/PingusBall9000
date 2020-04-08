@@ -7,7 +7,7 @@ using BeardedManStudios.Forge.Networking.Unity;
 
 public class GameBall : GameBallBehavior
 {
-	private ulong updateTime = 17;
+	private ulong updateTime = 16;
 	private Rigidbody rigidbodyRef = null;
 	private GameLogic gameLogic = null;
 

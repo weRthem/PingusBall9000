@@ -14,7 +14,7 @@ public class Player : PlayerBehavior
 	public Vector3 PlayerVelocity { get; private set; }
 	public Transform PlayerCameraTransform;
 	[SerializeField] TextMesh namePlate = null;
-	[SerializeField] float walkSpeed = 10f;
+	[SerializeField] float walkSpeed = 5f;
 
 
 	protected override void NetworkStart()
@@ -22,14 +22,14 @@ public class Player : PlayerBehavior
 		base.NetworkStart();
 
 		NetworkManager.Instance.Networker.disconnected += OnDisconnected;
-		//networkObject.UpdateInterval = 17;
+		networkObject.UpdateInterval = 16;
 
 		if (!networkObject.IsOwner)
 		{
 			transform.GetChild(0).gameObject.SetActive(false);
 			transform.GetChild(4).gameObject.SetActive(false);
 			GetComponent<ThirdPersonMovementController>().enabled = false;
-			Destroy(GetComponent<Rigidbody>());
+			//Destroy(GetComponent<Rigidbody>());
 		}
 		else
 		{
@@ -37,10 +37,16 @@ public class Player : PlayerBehavior
 			GetPlayerName();
 		}
 
+		if (!networkObject.IsServer)
+		{
+			Destroy(GetComponent<Rigidbody>());
+		}
+
 	}
 
 	private void Update()
 	{
+		/*
 		if (!networkObject.IsOwner)
 		{
 			transform.position = networkObject.position;
@@ -50,6 +56,7 @@ public class Player : PlayerBehavior
 
 		networkObject.position = transform.position;
 		networkObject.rotation = transform.rotation;
+		*/
 	}
 
 	public void GetPlayerName()
@@ -93,5 +100,36 @@ public class Player : PlayerBehavior
 			NetworkManager.Instance.Disconnect();
 			Cursor.lockState = CursorLockMode.None;
 		});
+	}
+
+	public override void SendPlayersInputData(RpcArgs args)
+	{
+		float mouseX = args.GetNext<float>();
+		float horizontalAxis = args.GetNext<float>();
+		float verticalAxis = args.GetNext<float>();
+
+		horizontalAxis = Mathf.Clamp(horizontalAxis, -1, 1);
+		verticalAxis = Mathf.Clamp(verticalAxis, -1, 1);
+
+		Vector3 forwardVector = transform.forward * verticalAxis * walkSpeed;
+		Vector3 sidewaysVector = transform.right * horizontalAxis * walkSpeed;
+
+		Vector3 playerMovement = forwardVector + sidewaysVector;
+		Rigidbody myRigidbody = GetComponent<Rigidbody>();
+		playerMovement.y = myRigidbody.velocity.y;
+
+		myRigidbody.velocity = playerMovement;
+		transform.rotation = Quaternion.Euler(0, mouseX, 0);
+
+		networkObject.SendRpc(RPC_SET_PLAYERS_POS_AND_ROT, Receivers.All, transform.position, transform.rotation);
+
+	}
+
+	public override void SetPlayersPosAndRot(RpcArgs args)
+	{
+		if (networkObject.IsServer) return;
+
+		transform.position = args.GetNext<Vector3>();
+		transform.rotation = args.GetNext<Quaternion>();
 	}
 }
