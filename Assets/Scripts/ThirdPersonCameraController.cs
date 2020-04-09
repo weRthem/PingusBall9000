@@ -6,7 +6,9 @@ using UnityEngine;
 public class ThirdPersonCameraController : MonoBehaviour
 {
 	[SerializeField] float rotationSpeed = 10f;
-	[SerializeField] Transform target, player;
+	[SerializeField] Transform target;
+
+	Player player = null;
 	bool isCameraInverted = false;
 	float mouseX, mouseY;
 	private Vector3 velocity = Vector3.zero;
@@ -20,10 +22,32 @@ public class ThirdPersonCameraController : MonoBehaviour
 
 	private void Update()
 	{
+		if (Player.player != null && player == null)
+		{
+			player = Player.player;
+		}
+
 		if (Input.GetKeyDown(KeyCode.I))
 		{
 			isCameraInverted = !isCameraInverted;
 		}
+
+		if (player)
+		{
+			LerpToPlayer();
+		}
+	}
+
+	private void LerpToPlayer()
+	{
+		Vector3 targetPos = player.transform.position;
+
+		targetPos.Set(targetPos.x, targetPos.y + 1.3f, targetPos.z);
+
+		if (targetPos == target.position) return;
+
+
+		target.position = Vector3.SmoothDamp(target.position, targetPos, ref velocity, 0.001f);
 	}
 
 	private void LateUpdate()
@@ -33,6 +57,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 
 	void CameraControl()
 	{
+		if (player == null) return;
 		if (isCameraInverted)
 		{
 			mouseX += Input.GetAxis("Mouse X") * rotationSpeed;

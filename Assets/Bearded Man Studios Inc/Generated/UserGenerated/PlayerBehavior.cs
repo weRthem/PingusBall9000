@@ -4,14 +4,13 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"string\"][\"float\", \"float\", \"float\"][\"Vector3\", \"Quaternion\"][]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\"][\"mouseX\", \"horizontalAxis\", \"verticalAxis\"][\"position\", \"rotation\"][]]")]
+	[GeneratedRPC("{\"types\":[[\"string\"][\"Vector3\", \"Quaternion\"][]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\"][\"velocity\", \"rotation\"][]]")]
 	public abstract partial class PlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_UPDATE_NAME = 0 + 5;
-		public const byte RPC_SEND_PLAYERS_INPUT_DATA = 1 + 5;
-		public const byte RPC_SET_PLAYERS_POS_AND_ROT = 2 + 5;
-		public const byte RPC_PLAYER_JUMP = 3 + 5;
+		public const byte RPC_SET_PLAYERS_POS_AND_ROT = 1 + 5;
+		public const byte RPC_PLAYER_JUMP = 2 + 5;
 		
 		public PlayerNetworkObject networkObject = null;
 
@@ -26,7 +25,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("updateName", updateName, typeof(string));
-			networkObject.RegisterRpc("SendPlayersInputData", SendPlayersInputData, typeof(float), typeof(float), typeof(float));
 			networkObject.RegisterRpc("SetPlayersPosAndRot", SetPlayersPosAndRot, typeof(Vector3), typeof(Quaternion));
 			networkObject.RegisterRpc("PlayerJump", PlayerJump);
 
@@ -112,14 +110,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public abstract void updateName(RpcArgs args);
 		/// <summary>
 		/// Arguments:
-		/// float mouseX
-		/// float horizontalAxis
-		/// float verticalAxis
-		/// </summary>
-		public abstract void SendPlayersInputData(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// Vector3 position
+		/// Vector3 velocity
 		/// Quaternion rotation
 		/// </summary>
 		public abstract void SetPlayersPosAndRot(RpcArgs args);

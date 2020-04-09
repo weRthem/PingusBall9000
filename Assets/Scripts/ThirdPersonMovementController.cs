@@ -22,6 +22,8 @@ public class ThirdPersonMovementController : MonoBehaviour
 		player.networkObject.mouseX = mouseX;
 		player.networkObject.horizontalAxis = horizontalMovement;
 		player.networkObject.verticalAxis = verticalMovement;
+		player.networkObject.position = transform.position;
+		player.networkObject.rotation = transform.rotation;
 	}
 
 	// Update is called once per frame
