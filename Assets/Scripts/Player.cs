@@ -43,6 +43,7 @@ public class Player : PlayerBehavior
 		if (networkObject.IsServer)
 		{
 			MovePlayer();
+			ValidatePlayerPosition();
 		}
 
 		if (!networkObject.IsOwner && !networkObject.IsServer)
@@ -50,6 +51,14 @@ public class Player : PlayerBehavior
 			// change to a rpc that sends from the server
 			transform.position = networkObject.position;
 			transform.rotation = networkObject.rotation;
+		}
+	}
+
+	private void ValidatePlayerPosition()
+	{
+		if (Vector3.Distance(transform.position, networkObject.position) > 3f)
+		{
+			networkObject.SendRpc(RPC_SET_POS_TO_SERVER, Receivers.Owner, transform.position);
 		}
 	}
 
@@ -135,5 +144,11 @@ public class Player : PlayerBehavior
 
 			GetComponent<Rigidbody>().AddForce(0, jumpPower, 0);
 		}
+	}
+
+	public override void SetPosToServer(RpcArgs args)
+	{
+		Debug.Log("reseting player");
+		transform.position = args.GetNext<Vector3>();
 	}
 }
