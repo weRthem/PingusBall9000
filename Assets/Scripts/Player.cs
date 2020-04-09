@@ -15,6 +15,7 @@ public class Player : PlayerBehavior
 	public Transform PlayerCameraTransform;
 	[SerializeField] TextMesh namePlate = null;
 	[SerializeField] float walkSpeed = 5f;
+	[SerializeField] float jumpPower = 350f;
 
 
 	protected override void NetworkStart()
@@ -57,6 +58,33 @@ public class Player : PlayerBehavior
 		networkObject.position = transform.position;
 		networkObject.rotation = transform.rotation;
 		*/
+
+		if (networkObject.IsServer)
+		{
+			MovePlayer();
+		}
+	}
+
+	private void MovePlayer()
+	{
+		float mouseX = networkObject.mouseX;
+		float horizontalAxis = networkObject.horizontalAxis;
+		float verticalAxis = networkObject.verticalAxis;
+
+		//horizontalAxis = Mathf.Clamp(horizontalAxis, -1.5f, 15f);
+		//verticalAxis = Mathf.Clamp(verticalAxis, -1.5f, 1.5f);
+
+		Vector3 forwardVector = transform.forward * verticalAxis * walkSpeed;
+		Vector3 sidewaysVector = transform.right * horizontalAxis * walkSpeed;
+
+		Vector3 playerMovement = forwardVector + sidewaysVector;
+		Rigidbody myRigidbody = GetComponent<Rigidbody>();
+		playerMovement.y = myRigidbody.velocity.y;
+
+		myRigidbody.velocity = playerMovement;
+		transform.rotation = Quaternion.Euler(0, mouseX, 0);
+
+		networkObject.SendRpc(RPC_SET_PLAYERS_POS_AND_ROT, Receivers.All, transform.position, transform.rotation);
 	}
 
 	public void GetPlayerName()
@@ -131,5 +159,18 @@ public class Player : PlayerBehavior
 
 		transform.position = args.GetNext<Vector3>();
 		transform.rotation = args.GetNext<Quaternion>();
+	}
+
+	public override void PlayerJump(RpcArgs args)
+	{
+		Ray ray = new Ray(transform.position, -Vector3.up);
+		RaycastHit hitInfo;
+		Debug.Log(Physics.Raycast(ray, out hitInfo, 1.1f));
+		if (Physics.Raycast(ray, out hitInfo, 1.1f))
+		{
+			if (hitInfo.collider.gameObject.GetComponent<Player>()) return;
+
+			GetComponent<Rigidbody>().AddForce(0, jumpPower, 0);
+		}
 	}
 }

@@ -7,6 +7,7 @@ using BeardedManStudios.Forge.Networking.Unity;
 
 public class GameBall : GameBallBehavior
 {
+	public string LastPlayerToTouch { get; private set; }
 	private ulong updateTime = 16;
 	private Rigidbody rigidbodyRef = null;
 	private GameLogic gameLogic = null;
@@ -43,34 +44,32 @@ public class GameBall : GameBallBehavior
 
 		if (collision.gameObject.GetComponent<Player>() == null) return;
 
-		if (collision.gameObject.GetComponent<Player>().networkObject.IsOwner) return;
+		LastPlayerToTouch = collision.gameObject.GetComponent<Player>().Name;
 
-		// try crossing the balls pos with the playerVelocity?
-		//Vector3 relativeForceIdea = Vector3.Cross(transform.position, collision.transform.position) + collision.gameObject.GetComponent<Player>().PlayerVelocity;
-
-		//Vector3 relativeForceIdea = new Vector3(xVel, yVel, zVel);
-
-		//relativeForceIdea = relativeForceIdea.normalized;
-
-		//wrigidbodyRef.AddForce(relativeForceIdea * Vector3.Magnitude(collision.gameObject.GetComponent<Player>().PlayerVelocity), ForceMode.Impulse);
 	}
 
 	public void Reset()
 	{
-		transform.position = Vector3.up * 10;
+		transform.position = Vector3.up * 15;
 
-		GetComponent<Rigidbody>().velocity = Vector3.zero;
+		Rigidbody myRigidbody = GetComponent<Rigidbody>();
 
-		Vector3 force = new Vector3(0, 0, 0);
-		force.x = Random.Range(300, 500);
-		force.z = Random.Range(300, 500);
+		myRigidbody.velocity = Vector3.zero;
 
-		if (Random.value < 0.5f)
-			force.x *= -1;
+		myRigidbody.isKinematic = true;
 
-		if (Random.value < 0.5f)
-			force.z *= -1;
+		Invoke("PutBallInPlay", 1.75f);
 
-		GetComponent<Rigidbody>().AddForce(force);
+	}
+
+	private void PutBallInPlay()
+	{
+		Rigidbody myRigidbody = GetComponent<Rigidbody>();
+
+		myRigidbody.isKinematic = false;
+
+		Vector3 force = new Vector3(0, 200, 0);
+
+		myRigidbody.AddForce(force);
 	}
 }

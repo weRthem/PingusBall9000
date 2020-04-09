@@ -26,7 +26,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 		}
 	}
 
-	private void FixedUpdate()
+	private void LateUpdate()
 	{
 		CameraControl();
 	}

@@ -11,19 +11,24 @@ public class ThirdPersonMovementController : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
     {
-		//GetComponent<Player>().SetAxisDataFromPlayer(0, 0);
+
 	}
 
 	private void Update()
 	{
-		//PlayerJump();
+		PlayerJump();
+		Player player = GetComponent<Player>();
+
+		player.networkObject.mouseX = mouseX;
+		player.networkObject.horizontalAxis = horizontalMovement;
+		player.networkObject.verticalAxis = verticalMovement;
 	}
 
 	// Update is called once per frame
 	void FixedUpdate()
     {
 		PlayerMovement();
-		GetComponent<Player>().networkObject.SendRpc(PlayerBehavior.RPC_SEND_PLAYERS_INPUT_DATA, BeardedManStudios.Forge.Networking.Receivers.Server, mouseX, horizontalMovement, verticalMovement);
+		//GetComponent<Player>().networkObject.SendRpc(PlayerBehavior.RPC_SEND_PLAYERS_INPUT_DATA, BeardedManStudios.Forge.Networking.Receivers.Server, mouseX, horizontalMovement, verticalMovement);
 	}
 
 
@@ -31,22 +36,12 @@ public class ThirdPersonMovementController : MonoBehaviour
 	{
 		horizontalMovement = Input.GetAxis("Horizontal");
 		verticalMovement = Input.GetAxis("Vertical");
-
-		//GetComponent<Player>().SetPlayerAxis(horizontalMovement, verticalMovement);
 	}
 
 	private void PlayerJump()
 	{
 		if (!Input.GetKeyDown(KeyCode.Space)) return;
 
-		Ray ray = new Ray(transform.position, -Vector3.up);
-		RaycastHit hitInfo;
-		Debug.Log(Physics.Raycast(ray, out hitInfo, 1.1f));
-		if (Physics.Raycast(ray, out hitInfo, 1.1f))
-		{
-			if (hitInfo.collider.gameObject.GetComponent<Player>()) return;
-
-			//GetComponent<Rigidbody>().AddForce(0, jumpPower, 0);
-		}
+		GetComponent<Player>().networkObject.SendRpc(PlayerBehavior.RPC_PLAYER_JUMP, BeardedManStudios.Forge.Networking.Receivers.Server);
 	}
 }

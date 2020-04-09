@@ -9,6 +9,11 @@ using BeardedManStudios.Forge.Networking.Unity;
 public class GameLogic : GameLogicBehavior
 {
 	[SerializeField] Text scoreLabel;
+	[SerializeField] Text OrangeScoreText;
+	[SerializeField] Text BlueScoreText;
+
+	private int blueScore = 0;
+	private int orangeScore = 0;
 
 	public static GameLogic Instance;
 	// Start is called before the first frame update
@@ -23,6 +28,18 @@ public class GameLogic : GameLogicBehavior
 	public override void PlayerScored(RpcArgs args)
 	{
 		string playerName = args.GetNext<string>();
+		bool orangeScored = args.GetNext<bool>();
+
+		if (orangeScored)
+		{
+			orangeScore++;
+			OrangeScoreText.text = orangeScore.ToString();
+		}
+		else
+		{
+			blueScore++;
+			BlueScoreText.text = blueScore.ToString();
+		}
 
 		scoreLabel.text = playerName + " scored the last point";
 	}

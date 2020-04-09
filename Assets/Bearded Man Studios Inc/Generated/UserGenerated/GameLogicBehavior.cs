@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"string\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\"]]")]
+	[GeneratedRPC("{\"types\":[[\"string\", \"bool\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\", \"blueTeamScored\"]]")]
 	public abstract partial class GameLogicBehavior : NetworkBehavior
 	{
 		public const byte RPC_PLAYER_SCORED = 0 + 5;
@@ -22,7 +22,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("PlayerScored", PlayerScored, typeof(string));
+			networkObject.RegisterRpc("PlayerScored", PlayerScored, typeof(string), typeof(bool));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -102,6 +102,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// <summary>
 		/// Arguments:
 		/// string playerName
+		/// bool blueTeamScored
 		/// </summary>
 		public abstract void PlayerScored(RpcArgs args);
 
