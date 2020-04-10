@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[]")]
-	[GeneratedRPCVariableNames("{\"types\":[]")]
+	[GeneratedRPC("{\"types\":[[\"Vector3\", \"Quaternion\", \"Vector3\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"position\", \"rotation\", \"velocity\"]]")]
 	public abstract partial class GameBallBehavior : NetworkBehavior
 	{
+		public const byte RPC_RESET_BALL_TO_SERVER = 0 + 5;
 		
 		public GameBallNetworkObject networkObject = null;
 
@@ -21,6 +22,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
+			networkObject.RegisterRpc("ResetBallToServer", ResetBallToServer, typeof(Vector3), typeof(Quaternion), typeof(Vector3));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -97,6 +99,13 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.SnapInterpolations();
 		}
 
+		/// <summary>
+		/// Arguments:
+		/// Vector3 position
+		/// Quaternion rotation
+		/// Vector3 velocity
+		/// </summary>
+		public abstract void ResetBallToServer(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

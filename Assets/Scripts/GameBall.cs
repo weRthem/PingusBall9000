@@ -20,14 +20,14 @@ public class GameBall : GameBallBehavior
 		networkObject.UpdateInterval = updateTime;
 
 		if (!networkObject.IsServer) {
-			Destroy(GetComponent<Rigidbody>());
+			//Destroy(GetComponent<Rigidbody>());
 		}
 	}
 
     // Update is called once per frame
     void Update()
     {
-		if (!networkObject.IsOwner)
+		/*if (!networkObject.IsOwner)
 		{
 			transform.position = networkObject.position;
 			transform.rotation = networkObject.rotation;
@@ -35,7 +35,14 @@ public class GameBall : GameBallBehavior
 		}
 		
 		networkObject.rotation = transform.rotation;
-		networkObject.position = transform.position;
+		networkObject.position = transform.position;*/
+
+
+		if (networkObject.IsServer)
+		{
+			networkObject.SendRpc(RPC_RESET_BALL_TO_SERVER, Receivers.All, transform.position, transform.rotation, GetComponent<Rigidbody>().velocity);
+		}
+
     }
 
 	private void OnCollisionEnter(Collision collision)
@@ -71,5 +78,25 @@ public class GameBall : GameBallBehavior
 		Vector3 force = new Vector3(0, 200, 0);
 
 		myRigidbody.AddForce(force);
+	}
+
+	public override void ResetBallToServer(RpcArgs args)
+	{
+		if (networkObject.IsServer) return;
+		Vector3 pos = args.GetNext<Vector3>();
+		Quaternion rot = args.GetNext<Quaternion>();
+		Vector3 vel = args.GetNext<Vector3>();
+
+		if (Vector3.Distance(pos, transform.position) > 1f)
+		{
+			transform.position = pos;
+		}
+
+		transform.rotation = rot;
+
+		if (Vector3.Distance(vel, GetComponent<Rigidbody>().velocity) > 1f)
+		{
+			GetComponent<Rigidbody>().velocity = vel;
+		}
 	}
 }
