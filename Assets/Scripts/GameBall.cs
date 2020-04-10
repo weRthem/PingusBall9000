@@ -87,14 +87,14 @@ public class GameBall : GameBallBehavior
 		Quaternion rot = args.GetNext<Quaternion>();
 		Vector3 vel = args.GetNext<Vector3>();
 
-		if (Vector3.Distance(pos, transform.position) > 1f)
+		if (Vector3.Distance(pos, transform.position) > 0.8f)
 		{
 			transform.position = pos;
 		}
 
 		transform.rotation = rot;
 
-		if (Vector3.Distance(vel, GetComponent<Rigidbody>().velocity) > 1f)
+		if (Vector3.Distance(vel, GetComponent<Rigidbody>().velocity) > 0.8f)
 		{
 			GetComponent<Rigidbody>().velocity = vel;
 		}

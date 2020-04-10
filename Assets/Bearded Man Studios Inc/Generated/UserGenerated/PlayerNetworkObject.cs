@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.15,0.15,0.15,0.15,0.15]")]
+	[GeneratedInterpol("{\"inter\":[0.15,0.15,0.15,0.15,0.15,0]")]
 	public partial class PlayerNetworkObject : NetworkObject
 	{
-		public const int IDENTITY = 7;
+		public const int IDENTITY = 10;
 
 		private byte[] _dirtyFields = new byte[1];
 
@@ -170,6 +170,37 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (rotationChanged != null) rotationChanged(_rotation, timestep);
 			if (fieldAltered != null) fieldAltered("rotation", _rotation, timestep);
 		}
+		[ForgeGeneratedField]
+		private bool _isRunning;
+		public event FieldEvent<bool> isRunningChanged;
+		public Interpolated<bool> isRunningInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
+		public bool isRunning
+		{
+			get { return _isRunning; }
+			set
+			{
+				// Don't do anything if the value is the same
+				if (_isRunning == value)
+					return;
+
+				// Mark the field as dirty for the network to transmit
+				_dirtyFields[0] |= 0x20;
+				_isRunning = value;
+				hasDirtyFields = true;
+			}
+		}
+
+		public void SetisRunningDirty()
+		{
+			_dirtyFields[0] |= 0x20;
+			hasDirtyFields = true;
+		}
+
+		private void RunChange_isRunning(ulong timestep)
+		{
+			if (isRunningChanged != null) isRunningChanged(_isRunning, timestep);
+			if (fieldAltered != null) fieldAltered("isRunning", _isRunning, timestep);
+		}
 
 		protected override void OwnershipChanged()
 		{
@@ -184,6 +215,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			verticalAxisInterpolation.current = verticalAxisInterpolation.target;
 			positionInterpolation.current = positionInterpolation.target;
 			rotationInterpolation.current = rotationInterpolation.target;
+			isRunningInterpolation.current = isRunningInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -195,6 +227,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			UnityObjectMapper.Instance.MapBytes(data, _verticalAxis);
 			UnityObjectMapper.Instance.MapBytes(data, _position);
 			UnityObjectMapper.Instance.MapBytes(data, _rotation);
+			UnityObjectMapper.Instance.MapBytes(data, _isRunning);
 
 			return data;
 		}
@@ -221,6 +254,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			rotationInterpolation.current = _rotation;
 			rotationInterpolation.target = _rotation;
 			RunChange_rotation(timestep);
+			_isRunning = UnityObjectMapper.Instance.Map<bool>(payload);
+			isRunningInterpolation.current = _isRunning;
+			isRunningInterpolation.target = _isRunning;
+			RunChange_isRunning(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -238,6 +275,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _position);
 			if ((0x10 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _rotation);
+			if ((0x20 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isRunning);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -319,6 +358,19 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_rotation(timestep);
 				}
 			}
+			if ((0x20 & readDirtyFlags[0]) != 0)
+			{
+				if (isRunningInterpolation.Enabled)
+				{
+					isRunningInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
+					isRunningInterpolation.Timestep = timestep;
+				}
+				else
+				{
+					_isRunning = UnityObjectMapper.Instance.Map<bool>(data);
+					RunChange_isRunning(timestep);
+				}
+			}
 		}
 
 		public override void InterpolateUpdate()
@@ -350,6 +402,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_rotation = (Quaternion)rotationInterpolation.Interpolate();
 				//RunChange_rotation(rotationInterpolation.Timestep);
+			}
+			if (isRunningInterpolation.Enabled && !isRunningInterpolation.current.UnityNear(isRunningInterpolation.target, 0.0015f))
+			{
+				_isRunning = (bool)isRunningInterpolation.Interpolate();
+				//RunChange_isRunning(isRunningInterpolation.Timestep);
 			}
 		}
 

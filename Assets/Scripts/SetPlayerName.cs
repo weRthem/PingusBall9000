@@ -11,6 +11,7 @@ public class SetPlayerName : MonoBehaviour
     void Start()
     {
 		SceneManager.activeSceneChanged += SetName;
+		Cursor.lockState = CursorLockMode.None;
 		if (!string.IsNullOrEmpty(PlayerPrefs.GetString("PlayerName")))
 		{
 			nameText.text = PlayerPrefs.GetString("PlayerName");
