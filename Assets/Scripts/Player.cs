@@ -21,8 +21,9 @@ public class Player : PlayerBehavior
 	[SerializeField] Slider runSlider = null;
 	[SerializeField] private float maxRunEnergy = 60f;
 	private float runEnergy = 0f;
-	private bool ranOutOfRun = false;
+	//private bool ranOutOfRun = false;
 	private bool clientRanOutOfRun = false;
+	private bool serverRanOutOfRun = false;
 
 	private int blueTeamCount = 0;
 	private int orangeTeamCount = 0;
@@ -31,7 +32,13 @@ public class Player : PlayerBehavior
 	protected override void NetworkStart()
 	{
 		base.NetworkStart();
-		runEnergy = maxRunEnergy;
+
+		if (networkObject.IsServer)
+		{
+			//ranOutOfRun = false;
+			runEnergy = maxRunEnergy;
+		}
+
 
 		if (networkObject.IsServer && networkObject.IsOwner)
 		{
@@ -71,20 +78,17 @@ public class Player : PlayerBehavior
 			networkObject.isRunning = Input.GetKey(KeyCode.LeftShift);
 			runSlider.value = runEnergy;
 
-
-			if (runEnergy <= 0 && !clientRanOutOfRun)
+			/*if (runEnergy <= 0 && !clientRanOutOfRun)
 			{
 				Debug.Log("Setting runSlider tp red");
 				clientRanOutOfRun = true;
 				runSlider.transform.GetChild(2).GetComponentInChildren<Image>().color = Color.red;
-			}
-
-			if (clientRanOutOfRun && runEnergy > maxRunEnergy / 4)
+			}else if (clientRanOutOfRun && runEnergy > maxRunEnergy / 4)
 			{
 				Debug.Log("Setting runSlider back to normal");
 				runSlider.transform.GetChild(2).GetComponentInChildren<Image>().color = Color.white;
 				clientRanOutOfRun = false;
-			}
+			}*/
 		}
 
 		if (!networkObject.IsOwner && !networkObject.IsServer)
@@ -101,15 +105,17 @@ public class Player : PlayerBehavior
 
 		runEnergy += 1 * Time.deltaTime;
 
-		if (ranOutOfRun && runEnergy > maxRunEnergy / 4)
+		float runResetThreshold = maxRunEnergy * 0.25f;
+
+		if (runEnergy > runResetThreshold)
 		{
-			ranOutOfRun = false;
+			serverRanOutOfRun = false;
 		}
 	}
 
 	private void ValidatePlayerPosition()
 	{
-		if (Vector3.Distance(transform.position, networkObject.position) > 1f)
+		if (Vector3.Distance(transform.position, networkObject.position) > 2f)
 		{
 			networkObject.SendRpc(RPC_SET_POS_TO_SERVER, Receivers.Owner, transform.position);
 		}
@@ -126,13 +132,23 @@ public class Player : PlayerBehavior
 
 		float moveSpeed = walkSpeed;
 
-		if (networkObject.isRunning && runEnergy > 0 && !ranOutOfRun)
+		bool canRun = networkObject.isRunning && runEnergy > 0;
+		bool isNotStandingStill = Mathf.Abs(horizontalAxis) > Mathf.Epsilon || Mathf.Abs(verticalAxis) > Mathf.Epsilon;
+
+		if (canRun && isNotStandingStill && !serverRanOutOfRun)
 		{
 			moveSpeed += runBoost;
+			runEnergy -= 4 * Time.deltaTime;
 		}
-		else if (runEnergy <= 0)
+		else if (runEnergy < 0 && !serverRanOutOfRun)
 		{
-			ranOutOfRun = true;
+			Debug.Log("Setting player to out of run");
+			serverRanOutOfRun = true;
+			RestoreRunEnergy();
+		}
+		else
+		{
+			RestoreRunEnergy();
 		}
 
 		Vector3 forwardVector = transform.forward * verticalAxis * moveSpeed;
@@ -140,19 +156,9 @@ public class Player : PlayerBehavior
 
 		Vector3 playerMovement = forwardVector + sidewaysVector;
 
-		if (moveSpeed != walkSpeed && playerMovement != Vector3.zero)
-		{
-			runEnergy -= 4 * Time.deltaTime;
-		}
-		else if (moveSpeed == walkSpeed || !networkObject.isRunning || playerMovement != Vector3.zero)
-		{
-			RestoreRunEnergy();
-		}
-
 		Rigidbody myRigidbody = GetComponent<Rigidbody>();
 		playerMovement.y = myRigidbody.velocity.y;
 
-		//myRigidbody.velocity = playerMovement;
 		transform.rotation = Quaternion.Euler(0, mouseX, 0);
 
 		networkObject.SendRpc(RPC_SET_PLAYERS_POS_AND_ROT, Receivers.ServerAndOwner, playerMovement, transform.rotation, runEnergy);
@@ -188,6 +194,7 @@ public class Player : PlayerBehavior
 		if (networkObject.IsOwner && !networkObject.IsServer)
 		{
 			runEnergy = args.GetNext<float>();
+			Debug.Log(runEnergy);
 		}
 	}
 

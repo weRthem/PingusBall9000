@@ -20,6 +20,8 @@ public class GameBall : GameBallBehavior
 
 	protected override void NetworkStart()
 	{
+		base.NetworkStart();
+
 		rigidbodyRef = GetComponent<Rigidbody>();
 		gameLogic = GameLogic.Instance;
 		networkObject.UpdateInterval = updateTime;
@@ -33,19 +35,9 @@ public class GameBall : GameBallBehavior
 	// Update is called once per frame
 	void Update()
     {
-		/*if (!networkObject.IsOwner)
-		{
-			transform.position = networkObject.position;
-			transform.rotation = networkObject.rotation;
-			return;
-		}
-		
-		networkObject.rotation = transform.rotation;
-		networkObject.position = transform.position;*/
-
-
 		if (networkObject.IsServer)
 		{
+			Debug.Log("Sending RPC for ball position");
 			networkObject.SendRpc(RPC_RESET_BALL_TO_SERVER, Receivers.All, transform.position, transform.rotation, GetComponent<Rigidbody>().velocity);
 		}
 
@@ -58,7 +50,6 @@ public class GameBall : GameBallBehavior
 		if (collision.gameObject.GetComponent<Player>() == null) return;
 
 		LastPlayerToTouch = collision.gameObject.GetComponent<Player>().Name;
-
 	}
 
 	public void Reset()
@@ -81,17 +72,21 @@ public class GameBall : GameBallBehavior
 
 		myRigidbody.isKinematic = false;
 
-		Vector3 force = new Vector3(0, 200, 0);
+		Vector3 force = new Vector3(0, 400, 0);
 
 		myRigidbody.AddForce(force);
 	}
 
 	public override void ResetBallToServer(RpcArgs args)
 	{
+		Debug.Log("Resetting ball pos");
 		if (networkObject.IsServer) return;
+
 		Vector3 pos = args.GetNext<Vector3>();
 		Quaternion rot = args.GetNext<Quaternion>();
 		Vector3 vel = args.GetNext<Vector3>();
+
+		Debug.Log(Vector3.Distance(pos, transform.position));
 
 		if (Vector3.Distance(pos, transform.position) > 0.8f)
 		{
