@@ -4,14 +4,15 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"string\"][\"Vector3\", \"Quaternion\", \"float\"][][\"Vector3\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\"][\"velocity\", \"rotation\", \"runEnergy\"][][\"position\"]]")]
+	[GeneratedRPC("{\"types\":[[\"string\"][\"Vector3\", \"Quaternion\", \"float\"][][\"Vector3\"][\"bool\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\"][\"velocity\", \"rotation\", \"runEnergy\"][][\"position\"][\"IsOnBlueTeam\"]]")]
 	public abstract partial class PlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_UPDATE_NAME = 0 + 5;
 		public const byte RPC_SET_PLAYERS_POS_AND_ROT = 1 + 5;
 		public const byte RPC_PLAYER_JUMP = 2 + 5;
 		public const byte RPC_SET_POS_TO_SERVER = 3 + 5;
+		public const byte RPC_UPDATE_PLAYER_TEAM = 4 + 5;
 		
 		public PlayerNetworkObject networkObject = null;
 
@@ -29,6 +30,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.RegisterRpc("SetPlayersPosAndRot", SetPlayersPosAndRot, typeof(Vector3), typeof(Quaternion), typeof(float));
 			networkObject.RegisterRpc("PlayerJump", PlayerJump);
 			networkObject.RegisterRpc("SetPosToServer", SetPosToServer, typeof(Vector3));
+			networkObject.RegisterRpc("UpdatePlayerTeam", UpdatePlayerTeam, typeof(bool));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -125,6 +127,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// Arguments:
 		/// </summary>
 		public abstract void SetPosToServer(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void UpdatePlayerTeam(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

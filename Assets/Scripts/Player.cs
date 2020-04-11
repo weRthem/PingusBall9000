@@ -37,6 +37,7 @@ public class Player : PlayerBehavior
 		{
 			IsBlueTeam = true;
 			blueTeamCount++;
+			networkObject.SendRpc(RPC_UPDATE_PLAYER_TEAM, Receivers.AllBuffered, IsBlueTeam);
 		}
 
 		NetworkManager.Instance.Networker.playerAccepted += PlayerJoined;
@@ -224,12 +225,25 @@ public class Player : PlayerBehavior
 			blueTeamCount++;
 			IsBlueTeam = true;
 		}
+		networkObject.SendRpc(RPC_UPDATE_PLAYER_TEAM, Receivers.AllBuffered, IsBlueTeam);
 	}
 
 	private void OnDisconnected(NetWorker sender)
 	{
 		NetworkManager.Instance.Networker.playerAccepted -= PlayerJoined;
 		NetworkManager.Instance.Networker.disconnected -= OnDisconnected;
+
+		if (networkObject.IsServer)
+		{
+			if (IsBlueTeam)
+			{
+				blueTeamCount--;
+			}
+			else
+			{
+				orangeTeamCount--;
+			}
+		}
 
 		MainThreadManager.Run(() =>
 		{
@@ -245,5 +259,11 @@ public class Player : PlayerBehavior
 			NetworkManager.Instance.Disconnect();
 			Cursor.lockState = CursorLockMode.None;
 		});
+	}
+
+	public override void UpdatePlayerTeam(RpcArgs args)
+	{
+		IsBlueTeam = args.GetNext<bool>();
+		Debug.Log("Is blue team: " + IsBlueTeam);
 	}
 }

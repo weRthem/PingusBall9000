@@ -473,6 +473,7 @@ MonoBehaviour:
   runBoost: 4
   runSlider: {fileID: 1362043898879939617}
   maxRunEnergy: 60
+  IsBlueTeam: 0
 --- !u!114 &1602895972268583713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -683,6 +684,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6adeadcf8a4b8d2458d32f3af5d75c55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  orangeColor: {r: 0.745283, g: 0.40980896, b: 0, a: 1}
 --- !u!1 &3919252885039658577
 GameObject:
   m_ObjectHideFlags: 0
