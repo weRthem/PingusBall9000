@@ -15,17 +15,23 @@ public class GameBall : GameBallBehavior
     // Start is called before the first frame update
     void Start()
     {
+
+	}
+
+	protected override void NetworkStart()
+	{
 		rigidbodyRef = GetComponent<Rigidbody>();
 		gameLogic = GameLogic.Instance;
 		networkObject.UpdateInterval = updateTime;
 
-		if (!networkObject.IsServer) {
+		if (!networkObject.IsServer)
+		{
 			//Destroy(GetComponent<Rigidbody>());
 		}
 	}
 
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
     {
 		/*if (!networkObject.IsOwner)
 		{

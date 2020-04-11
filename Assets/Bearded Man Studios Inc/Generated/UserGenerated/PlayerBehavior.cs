@@ -25,7 +25,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("updateName", updateName, typeof(string));
+			networkObject.RegisterRpc("UpdateName", UpdateName, typeof(string));
 			networkObject.RegisterRpc("SetPlayersPosAndRot", SetPlayersPosAndRot, typeof(Vector3), typeof(Quaternion), typeof(float));
 			networkObject.RegisterRpc("PlayerJump", PlayerJump);
 			networkObject.RegisterRpc("SetPosToServer", SetPosToServer, typeof(Vector3));
@@ -109,7 +109,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// Arguments:
 		/// string playerName
 		/// </summary>
-		public abstract void updateName(RpcArgs args);
+		public abstract void UpdateName(RpcArgs args);
 		/// <summary>
 		/// Arguments:
 		/// Vector3 velocity
