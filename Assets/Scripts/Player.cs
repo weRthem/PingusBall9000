@@ -12,7 +12,6 @@ public class Player : PlayerBehavior
 	public static Player player;
 
 	public string Name { get; private set; }
-	public Vector3 PlayerVelocity { get; private set; }
 	public Transform PlayerCameraTransform;
 	[SerializeField] TextMesh namePlate = null;
 	[SerializeField] float walkSpeed = 5f;
@@ -21,7 +20,6 @@ public class Player : PlayerBehavior
 	[SerializeField] Slider runSlider = null;
 	[SerializeField] private float maxRunEnergy = 60f;
 	private float runEnergy = 0f;
-	//private bool ranOutOfRun = false;
 	private bool clientRanOutOfRun = false;
 	private bool serverRanOutOfRun = false;
 
@@ -35,10 +33,8 @@ public class Player : PlayerBehavior
 
 		if (networkObject.IsServer)
 		{
-			//ranOutOfRun = false;
 			runEnergy = maxRunEnergy;
 		}
-
 
 		if (networkObject.IsServer && networkObject.IsOwner)
 		{
@@ -53,10 +49,9 @@ public class Player : PlayerBehavior
 
 		if (!networkObject.IsOwner)
 		{
-			//transform.GetChild(0).gameObject.SetActive(false);
+			//sets player canvas to inactive
 			transform.GetChild(4).gameObject.SetActive(false);
 			GetComponent<ThirdPersonMovementController>().enabled = false;
-			//Destroy(GetComponent<Rigidbody>());
 		}
 		else
 		{
@@ -78,22 +73,19 @@ public class Player : PlayerBehavior
 			networkObject.isRunning = Input.GetKey(KeyCode.LeftShift);
 			runSlider.value = runEnergy;
 
-			/*if (runEnergy <= 0 && !clientRanOutOfRun)
+			if (runEnergy < 0 && !clientRanOutOfRun)
 			{
-				Debug.Log("Setting runSlider tp red");
-				clientRanOutOfRun = true;
 				runSlider.transform.GetChild(2).GetComponentInChildren<Image>().color = Color.red;
+				clientRanOutOfRun = true;
 			}else if (clientRanOutOfRun && runEnergy > maxRunEnergy / 4)
 			{
-				Debug.Log("Setting runSlider back to normal");
 				runSlider.transform.GetChild(2).GetComponentInChildren<Image>().color = Color.white;
 				clientRanOutOfRun = false;
-			}*/
+			}
 		}
 
 		if (!networkObject.IsOwner && !networkObject.IsServer)
 		{
-			// change to a rpc that sends from the server
 			transform.position = networkObject.position;
 			transform.rotation = networkObject.rotation;
 		}
@@ -115,7 +107,7 @@ public class Player : PlayerBehavior
 
 	private void ValidatePlayerPosition()
 	{
-		if (Vector3.Distance(transform.position, networkObject.position) > 2f)
+		if (Vector3.Distance(transform.position, networkObject.position) > 1.5f)
 		{
 			networkObject.SendRpc(RPC_SET_POS_TO_SERVER, Receivers.Owner, transform.position);
 		}
@@ -126,11 +118,10 @@ public class Player : PlayerBehavior
 		float mouseX = networkObject.mouseX;
 		float horizontalAxis = networkObject.horizontalAxis;
 		float verticalAxis = networkObject.verticalAxis;
+		float moveSpeed = walkSpeed;
 
 		horizontalAxis = Mathf.Clamp(horizontalAxis, -1f, 1f);
 		verticalAxis = Mathf.Clamp(verticalAxis, -1f, 1f);
-
-		float moveSpeed = walkSpeed;
 
 		bool canRun = networkObject.isRunning && runEnergy > 0;
 		bool isNotStandingStill = Mathf.Abs(horizontalAxis) > Mathf.Epsilon || Mathf.Abs(verticalAxis) > Mathf.Epsilon;
@@ -194,7 +185,6 @@ public class Player : PlayerBehavior
 		if (networkObject.IsOwner && !networkObject.IsServer)
 		{
 			runEnergy = args.GetNext<float>();
-			Debug.Log(runEnergy);
 		}
 	}
 
@@ -202,7 +192,6 @@ public class Player : PlayerBehavior
 	{
 		Ray ray = new Ray(transform.position, -Vector3.up);
 		RaycastHit hitInfo;
-		//Debug.Log(Physics.Raycast(ray, out hitInfo, 1.1f));
 		if (Physics.Raycast(ray, out hitInfo, 1.2f))
 		{
 			if (hitInfo.collider.gameObject.GetComponent<Player>()) return;
