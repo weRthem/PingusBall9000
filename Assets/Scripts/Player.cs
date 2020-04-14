@@ -34,7 +34,10 @@ public class Player : PlayerBehavior
 		if (networkObject.IsServer)
 		{
 			runEnergy = maxRunEnergy;
+			NetworkManager.Instance.Networker.playerAccepted += PlayerJoined;
 		}
+
+		NetworkManager.Instance.Networker.disconnected += OnDisconnected;
 
 		if (networkObject.IsServer && networkObject.IsOwner)
 		{
@@ -43,8 +46,6 @@ public class Player : PlayerBehavior
 			networkObject.SendRpc(RPC_UPDATE_PLAYER_TEAM, Receivers.AllBuffered, IsBlueTeam);
 		}
 
-		NetworkManager.Instance.Networker.playerAccepted += PlayerJoined;
-		NetworkManager.Instance.Networker.disconnected += OnDisconnected;
 		networkObject.UpdateInterval = 16;
 
 		if (!networkObject.IsOwner)

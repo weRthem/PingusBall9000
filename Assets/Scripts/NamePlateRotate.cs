@@ -5,6 +5,7 @@ using UnityEngine;
 public class NamePlateRotate : MonoBehaviour
 {
 	[SerializeField] Color orangeColor;
+	[SerializeField] Color blueColor;
     // Update is called once per frame
     void LateUpdate()
     {
@@ -13,7 +14,7 @@ public class NamePlateRotate : MonoBehaviour
 		Player myPlayer = GetComponentInParent<Player>();
 		if (myPlayer.IsBlueTeam)
 		{
-			GetComponentInChildren<TextMesh>().color = Color.blue;
+			GetComponentInChildren<TextMesh>().color = blueColor;
 		}
 		else
 		{
