@@ -2,34 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 using BeardedManStudios.Forge.Networking.Generated;
+using BeardedManStudios.Forge.Networking;
 
 public class PlayerCharacterController : PlayerCharacterControllerBehavior
 {
 	public static PlayerCharacterController localPlayer = null;
+	public Player MyPlayerAvatar { get; private set; }
 
-	// Start is called before the first frame update
-	protected override void NetworkStart()
+	private void Start()
 	{
-		base.NetworkStart();
 
-		if (!networkObject.IsOwner)
-		{
-			transform.GetChild(0).gameObject.SetActive(false);
-			transform.GetChild(1).gameObject.SetActive(false);
-		}
 	}
 
 	private void Update()
 	{
-
-		//if (Player.player == null && localPlayer == null)
-		//{
-		//	localPlayer = Player.player;
-		//}
-
 		if (networkObject.IsOwner)
 		{
 			PlayerJump();
+		}
+		else if (transform.GetChild(0).gameObject.activeInHierarchy)
+		{
+			transform.GetChild(0).gameObject.SetActive(false);
+			transform.GetChild(1).gameObject.SetActive(false);
 		}
 	}
 
@@ -53,6 +47,33 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 	{
 		if (!Input.GetKeyDown(KeyCode.Space)) return;
 
-		localPlayer.networkObject.SendRpc(PlayerBehavior.RPC_PLAYER_JUMP, BeardedManStudios.Forge.Networking.Receivers.Server);
+		MyPlayerAvatar.networkObject.SendRpc(PlayerBehavior.RPC_PLAYER_JUMP, Receivers.Server);
+	}
+
+	public void StartPlayer(uint playerID)
+	{
+		Player[] players = FindObjectsOfType<Player>();
+
+		Debug.Log(playerID);
+		localPlayer = this;
+
+		transform.GetChild(0).gameObject.SetActive(true);
+		transform.GetChild(1).gameObject.SetActive(true);
+
+		foreach (Player p in players)
+		{
+			Debug.Log(p.networkObject.NetworkId);
+
+			if (p.networkObject.NetworkId == playerID)
+			{
+				MyPlayerAvatar = p;
+				break;
+			}
+		}
+	}
+
+	public override void GiveOwnerToPlayer(RpcArgs args)
+	{
+		StartPlayer(args.GetNext<uint>());
 	}
 }

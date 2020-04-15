@@ -8,7 +8,6 @@ public class ThirdPersonCameraController : MonoBehaviour
 	[SerializeField] float rotationSpeed = 10f;
 	[SerializeField] Transform target;
 
-	Player player = null;
 	bool isCameraInverted = false;
 	float mouseX, mouseY;
 	private Vector3 velocity = Vector3.zero;
@@ -22,30 +21,23 @@ public class ThirdPersonCameraController : MonoBehaviour
 
 	private void Update()
 	{
-		if (player != null && player == null)
-		{
-			player = player;
-		}
+		if (!GetComponentInParent<PlayerCharacterController>().MyPlayerAvatar) return;
 
 		if (Input.GetKeyDown(KeyCode.I))
 		{
 			isCameraInverted = !isCameraInverted;
 		}
 
-		if (player)
-		{
-			LerpToPlayer();
-		}
+		LerpToPlayer();
 	}
 
 	private void LerpToPlayer()
 	{
-		Vector3 targetPos = player.transform.position;
+		Vector3 targetPos = GetComponentInParent<PlayerCharacterController>().MyPlayerAvatar.transform.position;
 
 		targetPos.Set(targetPos.x, targetPos.y + 1.3f, targetPos.z);
 
 		if (targetPos == target.position) return;
-
 
 		target.position = Vector3.SmoothDamp(target.position, targetPos, ref velocity, 0.001f);
 	}
@@ -57,7 +49,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 
 	void CameraControl()
 	{
-		if (player == null) return;
+		if (!GetComponentInParent<PlayerCharacterController>().MyPlayerAvatar) return;
 		if (isCameraInverted)
 		{
 			mouseX += Input.GetAxis("Mouse X") * rotationSpeed;
@@ -75,6 +67,6 @@ public class ThirdPersonCameraController : MonoBehaviour
 
 		target.rotation = Quaternion.Euler(mouseY, mouseX, 0);
 
-		player.GetComponent<PlayerCharacterController>().networkObject.mouseX = mouseX;
+		GetComponentInParent<PlayerCharacterController>().networkObject.mouseX = mouseX;
 	}
 }

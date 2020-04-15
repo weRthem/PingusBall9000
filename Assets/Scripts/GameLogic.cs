@@ -22,13 +22,27 @@ public class GameLogic : GameLogicBehavior
 		QualitySettings.vSyncCount = 1;
 		Instance = this;
 
+    }
+
+	protected override void NetworkStart()
+	{
+		base.NetworkStart();
+
+
 		if (networkObject.IsServer)
 		{
 			NetworkManager.Instance.Networker.playerAccepted += PlayerConnected;
+
+			PlayerBehavior newPlayer = NetworkManager.Instance.InstantiatePlayer(position: new Vector3(0, 7, 0));
+			PlayerCharacterControllerBehavior newPlayerController = NetworkManager.Instance.InstantiatePlayerCharacterController(position: new Vector3(0, 0, 0));
+
+			Player playerComponent = newPlayer.GetComponent<Player>();
+			PlayerCharacterController playerMovement = newPlayerController.GetComponent<PlayerCharacterController>();
+			playerMovement.StartPlayer(playerComponent.networkObject.NetworkId);
 		}
 
 		NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;
-    }
+	}
 
 	public override void PlayerScored(RpcArgs args)
 	{
@@ -87,9 +101,9 @@ public class GameLogic : GameLogicBehavior
 			Player playerComponent = newPlayer.GetComponent<Player>();
 			PlayerCharacterController playerMovement = newPlayerController.GetComponent<PlayerCharacterController>();
 
-			newPlayerController.networkObject.AssignOwnership(player);
+			playerMovement.networkObject.AssignOwnership(player);
 			// Send RPC to the player controller to tell them which player is theirs
-
+			playerMovement.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_GIVE_OWNER_TO_PLAYER, Receivers.Owner, newPlayer.networkObject.NetworkId);
 		});
 	}
 }

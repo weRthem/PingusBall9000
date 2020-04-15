@@ -9,7 +9,10 @@ using BeardedManStudios.Forge.Networking.Unity;
 public class Player : PlayerBehavior
 {
 	public string Name { get; private set; }
-	public Transform PlayerCameraTransform;
+	//public Transform PlayerCameraTransform;
+
+	public PlayerCharacterController playerCharacterController = null;
+
 	[SerializeField] TextMesh namePlate = null;
 	[SerializeField] float walkSpeed = 5f;
 	[SerializeField] float jumpPower = 350f;
@@ -45,12 +48,8 @@ public class Player : PlayerBehavior
 
 		networkObject.UpdateInterval = 16;
 
-		if (!networkObject.IsOwner)
-		{
-			//sets player canvas to inactive
-			transform.GetChild(4).gameObject.SetActive(false);
-		}
-		else
+
+		if (playerCharacterController.networkObject.IsOwner)
 		{
 			GetPlayerName();
 		}

@@ -6,13 +6,12 @@ public class NamePlateRotate : MonoBehaviour
 {
 	[SerializeField] Color orangeColor;
 	[SerializeField] Color blueColor;
-	Player player;
     // Update is called once per frame
     void LateUpdate()
     {
-		if (!player) return;
+		if (!PlayerCharacterController.localPlayer) return;
 
-		Player myPlayer = GetComponentInParent<Player>();
+		/*Player myPlayer = GetComponentInParent<Player>();
 		if (myPlayer.IsBlueTeam)
 		{
 			GetComponentInChildren<TextMesh>().color = blueColor;
@@ -20,8 +19,8 @@ public class NamePlateRotate : MonoBehaviour
 		else
 		{
 			GetComponentInChildren<TextMesh>().color = orangeColor;
-		}
+		}*/
 
-		transform.LookAt(player.PlayerCameraTransform);
+		transform.LookAt(PlayerCharacterController.localPlayer.GetComponentInChildren<Camera>().transform);
     }
 }
