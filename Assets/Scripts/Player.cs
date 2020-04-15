@@ -8,9 +8,6 @@ using BeardedManStudios.Forge.Networking.Unity;
 
 public class Player : PlayerBehavior
 {
-
-	public static Player player;
-
 	public string Name { get; private set; }
 	public Transform PlayerCameraTransform;
 	[SerializeField] TextMesh namePlate = null;
@@ -52,11 +49,9 @@ public class Player : PlayerBehavior
 		{
 			//sets player canvas to inactive
 			transform.GetChild(4).gameObject.SetActive(false);
-			GetComponent<ThirdPersonMovementController>().enabled = false;
 		}
 		else
 		{
-			player = this;
 			GetPlayerName();
 		}
 	}

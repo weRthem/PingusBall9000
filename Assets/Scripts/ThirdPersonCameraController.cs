@@ -22,9 +22,9 @@ public class ThirdPersonCameraController : MonoBehaviour
 
 	private void Update()
 	{
-		if (Player.player != null && player == null)
+		if (player != null && player == null)
 		{
-			player = Player.player;
+			player = player;
 		}
 
 		if (Input.GetKeyDown(KeyCode.I))
@@ -75,8 +75,6 @@ public class ThirdPersonCameraController : MonoBehaviour
 
 		target.rotation = Quaternion.Euler(mouseY, mouseX, 0);
 
-		player.GetComponent<ThirdPersonMovementController>().mouseX = mouseX;
-
-		//player.rotation = Quaternion.Euler(0, mouseX, 0);
+		player.GetComponent<PlayerCharacterController>().networkObject.mouseX = mouseX;
 	}
 }

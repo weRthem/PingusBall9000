@@ -21,7 +21,12 @@ public class GameLogic : GameLogicBehavior
     {
 		QualitySettings.vSyncCount = 1;
 		Instance = this;
-		NetworkManager.Instance.InstantiatePlayer(position: new Vector3(0, 7, 0));
+
+		if (networkObject.IsServer)
+		{
+			NetworkManager.Instance.Networker.playerAccepted += PlayerConnected;
+		}
+
 		NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;
     }
 
@@ -68,6 +73,22 @@ public class GameLogic : GameLogicBehavior
 					toDelete[i].Destroy();
 				}
 			}
+
+		});
+	}
+
+	private void PlayerConnected(NetworkingPlayer player, NetWorker sender)
+	{
+		MainThreadManager.Run(() =>
+		{
+			PlayerBehavior newPlayer = NetworkManager.Instance.InstantiatePlayer(position: new Vector3(0, 7, 0));
+			PlayerCharacterControllerBehavior newPlayerController = NetworkManager.Instance.InstantiatePlayerCharacterController(position: new Vector3(0, 0, 0));
+
+			Player playerComponent = newPlayer.GetComponent<Player>();
+			PlayerCharacterController playerMovement = newPlayerController.GetComponent<PlayerCharacterController>();
+
+			newPlayerController.networkObject.AssignOwnership(player);
+			// Send RPC to the player controller to tell them which player is theirs
 
 		});
 	}
