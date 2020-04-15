@@ -39,14 +39,14 @@ public class Player : PlayerBehavior
 
 		NetworkManager.Instance.Networker.disconnected += OnDisconnected;
 
-		if (networkObject.IsServer && networkObject.IsOwner)
+		/*if (networkObject.IsServer && networkObject.IsOwner)
 		{
 			IsBlueTeam = true;
 			blueTeamCount++;
 			networkObject.SendRpc(RPC_UPDATE_PLAYER_TEAM, Receivers.AllBuffered, IsBlueTeam);
-		}
+		}*/
 
-		networkObject.UpdateInterval = 16;
+		networkObject.UpdateInterval = 32;
 
 
 		if (playerCharacterController.networkObject.IsOwner)
@@ -57,13 +57,22 @@ public class Player : PlayerBehavior
 
 	private void Update()
 	{
-		if (networkObject.IsServer)
+		if (!networkObject.IsServer)
 		{
-			MovePlayer();
-			ValidatePlayerPosition();
+			transform.position = networkObject.position;
+			transform.rotation = networkObject.rotation;
+			if (GetComponent<Rigidbody>())
+			{
+				Destroy(GetComponent<Rigidbody>());
+			}
+			return;
 		}
 
-		if (networkObject.IsOwner)
+		MovePlayer();
+
+		// Switch isRunning to the PlayerCharacterController
+
+		/*if (networkObject.IsOwner)
 		{
 			networkObject.isRunning = Input.GetKey(KeyCode.LeftShift);
 			runSlider.value = runEnergy;
@@ -77,13 +86,7 @@ public class Player : PlayerBehavior
 				runSlider.transform.GetChild(2).GetComponentInChildren<Image>().color = Color.white;
 				clientRanOutOfRun = false;
 			}
-		}
-
-		if (!networkObject.IsOwner && !networkObject.IsServer)
-		{
-			transform.position = networkObject.position;
-			transform.rotation = networkObject.rotation;
-		}
+		}*/
 	}
 
 	private void RestoreRunEnergy()
@@ -100,19 +103,11 @@ public class Player : PlayerBehavior
 		}
 	}
 
-	private void ValidatePlayerPosition()
-	{
-		if (Vector3.Distance(transform.position, networkObject.position) > 1.5f)
-		{
-			networkObject.SendRpc(RPC_SET_POS_TO_SERVER, Receivers.Owner, transform.position);
-		}
-	}
-
 	private void MovePlayer()
 	{
-		float mouseX = networkObject.mouseX;
-		float horizontalAxis = networkObject.horizontalAxis;
-		float verticalAxis = networkObject.verticalAxis;
+		float mouseX = playerCharacterController.networkObject.mouseX;
+		float horizontalAxis = playerCharacterController.networkObject.horizontalAxis;
+		float verticalAxis = playerCharacterController.networkObject.verticalAxis;
 		float moveSpeed = walkSpeed;
 
 		horizontalAxis = Mathf.Clamp(horizontalAxis, -1f, 1f);
@@ -147,7 +142,9 @@ public class Player : PlayerBehavior
 
 		transform.rotation = Quaternion.Euler(0, mouseX, 0);
 
-		networkObject.SendRpc(RPC_SET_PLAYERS_POS_AND_ROT, Receivers.ServerAndOwner, playerMovement, transform.rotation, runEnergy);
+		myRigidbody.velocity = playerMovement;
+		networkObject.position = transform.position;
+		networkObject.rotation = transform.rotation;
 	}
 
 	public void GetPlayerName()
@@ -173,15 +170,13 @@ public class Player : PlayerBehavior
 		}
 	}
 
-	public override void SetPlayersPosAndRot(RpcArgs args)
+	/*public override void SetPlayersPosAndRot(RpcArgs args)
 	{
-		GetComponent<Rigidbody>().velocity = args.GetNext<Vector3>();
-		transform.rotation = args.GetNext<Quaternion>();
 		if (networkObject.IsOwner && !networkObject.IsServer)
 		{
 			runEnergy = args.GetNext<float>();
 		}
-	}
+	}*/
 
 	public override void PlayerJump(RpcArgs args)
 	{
@@ -195,15 +190,9 @@ public class Player : PlayerBehavior
 		}
 	}
 
-	public override void SetPosToServer(RpcArgs args)
-	{
-		Debug.Log("reseting player");
-		transform.position = args.GetNext<Vector3>();
-	}
-
 	private void PlayerJoined(NetworkingPlayer player, NetWorker sender)
 	{
-		if (!networkObject.IsServer) return;
+		/*if (!networkObject.IsServer) return;
 
 		Debug.Log("a player joined");
 		if (blueTeamCount > orangeTeamCount)
@@ -216,7 +205,7 @@ public class Player : PlayerBehavior
 			blueTeamCount++;
 			IsBlueTeam = true;
 		}
-		networkObject.SendRpc(RPC_UPDATE_PLAYER_TEAM, Receivers.AllBuffered, IsBlueTeam);
+		networkObject.SendRpc(RPC_UPDATE_PLAYER_TEAM, Receivers.AllBuffered, IsBlueTeam);*/
 	}
 
 	private void OnDisconnected(NetWorker sender)
@@ -252,9 +241,9 @@ public class Player : PlayerBehavior
 		});
 	}
 
-	public override void UpdatePlayerTeam(RpcArgs args)
+	/*public override void UpdatePlayerTeam(RpcArgs args)
 	{
 		IsBlueTeam = args.GetNext<bool>();
 		Debug.Log("Is blue team: " + IsBlueTeam);
-	}
+	}*/
 }

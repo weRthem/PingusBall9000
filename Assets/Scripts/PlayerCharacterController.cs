@@ -14,6 +14,13 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 
 	}
 
+	protected override void NetworkStart()
+	{
+		base.NetworkStart();
+
+		networkObject.UpdateInterval = 16;
+	}
+
 	private void Update()
 	{
 		if (networkObject.IsOwner)

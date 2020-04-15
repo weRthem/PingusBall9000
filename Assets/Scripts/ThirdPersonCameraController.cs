@@ -19,6 +19,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 		Cursor.lockState = CursorLockMode.Locked;
     }
 
+
 	private void Update()
 	{
 		if (!GetComponentInParent<PlayerCharacterController>().MyPlayerAvatar) return;

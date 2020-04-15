@@ -37,8 +37,11 @@ public class GameLogic : GameLogicBehavior
 			PlayerCharacterControllerBehavior newPlayerController = NetworkManager.Instance.InstantiatePlayerCharacterController(position: new Vector3(0, 0, 0));
 
 			Player playerComponent = newPlayer.GetComponent<Player>();
-			PlayerCharacterController playerMovement = newPlayerController.GetComponent<PlayerCharacterController>();
-			playerMovement.StartPlayer(playerComponent.networkObject.NetworkId);
+			PlayerCharacterController pcc = newPlayerController.GetComponent<PlayerCharacterController>();
+
+			playerComponent.playerCharacterController = pcc;
+
+			pcc.StartPlayer(playerComponent.networkObject.NetworkId);
 		}
 
 		NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;
@@ -99,11 +102,13 @@ public class GameLogic : GameLogicBehavior
 			PlayerCharacterControllerBehavior newPlayerController = NetworkManager.Instance.InstantiatePlayerCharacterController(position: new Vector3(0, 0, 0));
 
 			Player playerComponent = newPlayer.GetComponent<Player>();
-			PlayerCharacterController playerMovement = newPlayerController.GetComponent<PlayerCharacterController>();
+			PlayerCharacterController pcc = newPlayerController.GetComponent<PlayerCharacterController>();
 
-			playerMovement.networkObject.AssignOwnership(player);
+			playerComponent.playerCharacterController = pcc;
+
+			pcc.networkObject.AssignOwnership(player);
 			// Send RPC to the player controller to tell them which player is theirs
-			playerMovement.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_GIVE_OWNER_TO_PLAYER, Receivers.Owner, newPlayer.networkObject.NetworkId);
+			pcc.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_GIVE_OWNER_TO_PLAYER, Receivers.Owner, newPlayer.networkObject.NetworkId);
 		});
 	}
 }
