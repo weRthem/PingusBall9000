@@ -77,6 +77,8 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 				break;
 			}
 		}
+
+		MyPlayerAvatar.GetPlayerName();
 	}
 
 	public override void GiveOwnerToPlayer(RpcArgs args)

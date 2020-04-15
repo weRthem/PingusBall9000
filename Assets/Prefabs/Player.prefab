@@ -366,7 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 749a8084379d53f40894e76e4f963a23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerCameraTransform: {fileID: 0}
+  playerCharacterController: {fileID: 0}
   namePlate: {fileID: 8893402690698677834}
   walkSpeed: 10
   jumpPower: 460
@@ -543,7 +543,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &756122790563472715
 Transform:
   m_ObjectHideFlags: 0

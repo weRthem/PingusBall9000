@@ -8,15 +8,9 @@ using BeardedManStudios.Forge.Networking.Unity;
 public class GameBall : GameBallBehavior
 {
 	public string LastPlayerToTouch { get; private set; }
-	private ulong updateTime = 16;
+	private ulong updateTime = 32;
 	private Rigidbody rigidbodyRef = null;
 	private GameLogic gameLogic = null;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-	}
 
 	protected override void NetworkStart()
 	{
@@ -28,17 +22,24 @@ public class GameBall : GameBallBehavior
 
 		if (!networkObject.IsServer)
 		{
-			//Destroy(GetComponent<Rigidbody>());
+			Destroy(GetComponent<Rigidbody>());
 		}
 	}
 
 	// Update is called once per frame
 	void Update()
     {
+		if (!networkObject.IsServer)
+		{
+			transform.position = networkObject.position;
+			transform.rotation = networkObject.rotation;
+			return;
+		}
+
 		if (networkObject.IsServer)
 		{
-			Debug.Log("Sending RPC for ball position");
-			networkObject.SendRpc(RPC_RESET_BALL_TO_SERVER, Receivers.All, transform.position, transform.rotation, GetComponent<Rigidbody>().velocity);
+			networkObject.position = transform.position;
+			networkObject.rotation = transform.rotation;
 		}
 
     }
@@ -77,27 +78,4 @@ public class GameBall : GameBallBehavior
 		myRigidbody.AddForce(force);
 	}
 
-	public override void ResetBallToServer(RpcArgs args)
-	{
-		Debug.Log("Resetting ball pos");
-		if (networkObject.IsServer) return;
-
-		Vector3 pos = args.GetNext<Vector3>();
-		Quaternion rot = args.GetNext<Quaternion>();
-		Vector3 vel = args.GetNext<Vector3>();
-
-		Debug.Log(Vector3.Distance(pos, transform.position));
-
-		if (Vector3.Distance(pos, transform.position) > 0.8f)
-		{
-			transform.position = pos;
-		}
-
-		transform.rotation = rot;
-
-		if (Vector3.Distance(vel, GetComponent<Rigidbody>().velocity) > 0.8f)
-		{
-			GetComponent<Rigidbody>().velocity = vel;
-		}
-	}
 }

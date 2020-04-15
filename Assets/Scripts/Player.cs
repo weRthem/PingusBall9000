@@ -47,12 +47,6 @@ public class Player : PlayerBehavior
 		}*/
 
 		networkObject.UpdateInterval = 32;
-
-
-		if (playerCharacterController.networkObject.IsOwner)
-		{
-			GetPlayerName();
-		}
 	}
 
 	private void Update()
@@ -149,8 +143,6 @@ public class Player : PlayerBehavior
 
 	public void GetPlayerName()
 	{
-		if (!networkObject.IsOwner) return;
-
 		Name = PlayerPrefs.GetString("PlayerName");
 
 		networkObject.SendRpc(RPC_UPDATE_NAME, Receivers.AllBuffered, Name);
@@ -160,14 +152,9 @@ public class Player : PlayerBehavior
 	{
 		Debug.Log("called update name");
 		Name = args.GetNext<string>();
-		if (!networkObject.IsOwner)
-		{
-			namePlate.text = Name;
-		}
-		else
-		{
-			namePlate.gameObject.transform.parent.gameObject.SetActive(false);
-		}
+
+		namePlate.text = Name;
+		namePlate.gameObject.transform.parent.gameObject.SetActive(true);
 	}
 
 	/*public override void SetPlayersPosAndRot(RpcArgs args)
