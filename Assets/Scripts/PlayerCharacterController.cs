@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
+using BeardedManStudios.Forge.Networking.Unity;
 
 public class PlayerCharacterController : PlayerCharacterControllerBehavior
 {
 	public static PlayerCharacterController localPlayer = null;
-	public Player MyPlayerAvatar { get; private set; }
+	public Player MyPlayerAvatar { get; set; }
 
 	private void Start()
 	{
@@ -23,6 +24,11 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 
 	private void Update()
 	{
+		if (networkObject.IsServer)
+		{
+			Debug.Log(MyPlayerAvatar);
+		}
+
 		if (networkObject.IsOwner)
 		{
 			PlayerJump();
@@ -57,15 +63,19 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 		MyPlayerAvatar.networkObject.SendRpc(PlayerBehavior.RPC_PLAYER_JUMP, Receivers.Server);
 	}
 
-	public void StartPlayer(uint playerID)
+	public void StartUpPlayer()
 	{
+		networkObject.SendRpc(RPC_GIVE_OWNER_TO_PLAYER, Receivers.AllBuffered, MyPlayerAvatar.networkObject.NetworkId);
+	}
+
+	public override void GiveOwnerToPlayer(RpcArgs args)
+	{
+		uint playerID = args.GetNext<uint>();
+
 		Player[] players = FindObjectsOfType<Player>();
 
 		Debug.Log(playerID);
 		localPlayer = this;
-
-		transform.GetChild(0).gameObject.SetActive(true);
-		transform.GetChild(1).gameObject.SetActive(true);
 
 		foreach (Player p in players)
 		{
@@ -78,11 +88,19 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 			}
 		}
 
-		MyPlayerAvatar.GetPlayerName();
+		if (networkObject.IsOwner)
+		{
+			transform.GetChild(0).gameObject.SetActive(true);
+			transform.GetChild(1).gameObject.SetActive(true);
+			MyPlayerAvatar.GetPlayerName();
+		}
 	}
 
-	public override void GiveOwnerToPlayer(RpcArgs args)
+	public override void DestroyPlayer(RpcArgs args)
 	{
-		StartPlayer(args.GetNext<uint>());
+		NetworkManager.Instance.Networker.NetworkObjectList.Remove(MyPlayerAvatar.networkObject);
+		MyPlayerAvatar.networkObject.Destroy();
+		NetworkManager.Instance.Networker.NetworkObjectList.Remove(networkObject);
+		networkObject.Destroy();
 	}
 }

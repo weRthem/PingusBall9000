@@ -41,7 +41,9 @@ public class GameLogic : GameLogicBehavior
 
 			playerComponent.playerCharacterController = pcc;
 
-			pcc.StartPlayer(playerComponent.networkObject.NetworkId);
+			// not sending?
+			pcc.MyPlayerAvatar = playerComponent;
+			//pcc.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_GIVE_OWNER_TO_PLAYER, Receivers.AllBuffered, playerComponent.networkObject.NetworkId);
 		}
 
 		NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;
@@ -86,8 +88,7 @@ public class GameLogic : GameLogicBehavior
 			{
 				for (int i = toDelete.Count - 1; i >= 0; i--)
 				{
-					sender.NetworkObjectList.Remove(toDelete[i]);
-					toDelete[i].Destroy();
+					toDelete[i].SendRpc(PlayerCharacterControllerBehavior.RPC_DESTROY_PLAYER, Receivers.All);
 				}
 			}
 
@@ -105,10 +106,10 @@ public class GameLogic : GameLogicBehavior
 			PlayerCharacterController pcc = newPlayerController.GetComponent<PlayerCharacterController>();
 
 			playerComponent.playerCharacterController = pcc;
+			pcc.MyPlayerAvatar = playerComponent;
 
 			pcc.networkObject.AssignOwnership(player);
-			// Send RPC to the player controller to tell them which player is theirs
-			pcc.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_GIVE_OWNER_TO_PLAYER, Receivers.Owner, newPlayer.networkObject.NetworkId);
+			pcc.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_GIVE_OWNER_TO_PLAYER, Receivers.AllBuffered, playerComponent.networkObject.NetworkId);
 		});
 	}
 }

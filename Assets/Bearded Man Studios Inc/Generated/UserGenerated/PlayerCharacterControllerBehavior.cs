@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"uint\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerAvatarNetworkID\"]]")]
+	[GeneratedRPC("{\"types\":[[\"uint\"][]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerAvatarNetworkID\"][]]")]
 	public abstract partial class PlayerCharacterControllerBehavior : NetworkBehavior
 	{
 		public const byte RPC_GIVE_OWNER_TO_PLAYER = 0 + 5;
+		public const byte RPC_DESTROY_PLAYER = 1 + 5;
 		
 		public PlayerCharacterControllerNetworkObject networkObject = null;
 
@@ -23,6 +24,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("GiveOwnerToPlayer", GiveOwnerToPlayer, typeof(uint));
+			networkObject.RegisterRpc("DestroyPlayer", DestroyPlayer);
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -104,6 +106,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// uint playerAvatarNetworkID
 		/// </summary>
 		public abstract void GiveOwnerToPlayer(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void DestroyPlayer(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}
