@@ -9,6 +9,7 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 {
 	public static PlayerCharacterController localPlayer = null;
 	public Player MyPlayerAvatar { get; set; }
+	public string playerName { get; private set; } = "";
 
 	private void Start()
 	{
@@ -24,11 +25,6 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 
 	private void Update()
 	{
-		if (networkObject.IsServer)
-		{
-			Debug.Log(MyPlayerAvatar);
-		}
-
 		if (networkObject.IsOwner)
 		{
 			PlayerJump();
@@ -68,6 +64,13 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 		networkObject.SendRpc(RPC_GIVE_OWNER_TO_PLAYER, Receivers.AllBuffered, MyPlayerAvatar.networkObject.NetworkId);
 	}
 
+	public void GetPlayersName()
+	{
+		playerName = PlayerPrefs.GetString("PlayerName");
+		Debug.Log(playerName);
+		networkObject.SendRpc(RPC_SEND_PLAYER_NAME_TO_ALL_CLIENTS, Receivers.Server, playerName);
+	}
+
 	public override void GiveOwnerToPlayer(RpcArgs args)
 	{
 		uint playerID = args.GetNext<uint>();
@@ -92,7 +95,7 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 		{
 			transform.GetChild(0).gameObject.SetActive(true);
 			transform.GetChild(1).gameObject.SetActive(true);
-			MyPlayerAvatar.GetPlayerName();
+			GetPlayersName();
 		}
 	}
 
@@ -102,5 +105,17 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 		MyPlayerAvatar.networkObject.Destroy();
 		NetworkManager.Instance.Networker.NetworkObjectList.Remove(networkObject);
 		networkObject.Destroy();
+	}
+
+	public override void SendPlayerNameToAllClients(RpcArgs args)
+	{
+
+		Debug.Log("you");
+
+		playerName = args.GetNext<string>();
+		MyPlayerAvatar.namePlateHolder.SetActive(true);
+		MyPlayerAvatar.namePlateHolder.GetComponentInChildren<TextMesh>().text = playerName;
+		// Send RPCs out to all buffered
+		MyPlayerAvatar.networkObject.SendRpc(Player.RPC_UPDATE_PLAYERS_NAME_FOR_CLIENTS, Receivers.AllBuffered, playerName);
 	}
 }

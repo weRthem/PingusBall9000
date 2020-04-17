@@ -50,7 +50,7 @@ public class GameBall : GameBallBehavior
 
 		if (collision.gameObject.GetComponent<Player>() == null) return;
 
-		LastPlayerToTouch = collision.gameObject.GetComponent<Player>().Name;
+		LastPlayerToTouch = collision.gameObject.GetComponent<Player>().playerCharacterController.playerName;
 	}
 
 	public void Reset()

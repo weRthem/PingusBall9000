@@ -11,11 +11,6 @@ public class NamePlateRotate : MonoBehaviour
     {
 		if (!PlayerCharacterController.localPlayer) return;
 
-		if (PlayerCharacterController.localPlayer.networkObject.IsOwner)
-		{
-			gameObject.SetActive(false);
-		}
-
 		/*Player myPlayer = GetComponentInParent<Player>();
 		if (myPlayer.IsBlueTeam)
 		{

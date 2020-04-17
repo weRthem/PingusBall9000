@@ -8,12 +8,10 @@ using BeardedManStudios.Forge.Networking.Unity;
 
 public class Player : PlayerBehavior
 {
-	public string Name { get; private set; }
-	//public Transform PlayerCameraTransform;
-
 	public PlayerCharacterController playerCharacterController = null;
+	public string Name { get; private set; }
+	public GameObject namePlateHolder = null;
 
-	[SerializeField] TextMesh namePlate = null;
 	[SerializeField] float walkSpeed = 5f;
 	[SerializeField] float jumpPower = 350f;
 	[SerializeField] float runBoost = 2f;
@@ -39,13 +37,6 @@ public class Player : PlayerBehavior
 
 		NetworkManager.Instance.Networker.disconnected += OnDisconnected;
 
-		/*if (networkObject.IsServer && networkObject.IsOwner)
-		{
-			IsBlueTeam = true;
-			blueTeamCount++;
-			networkObject.SendRpc(RPC_UPDATE_PLAYER_TEAM, Receivers.AllBuffered, IsBlueTeam);
-		}*/
-
 		networkObject.UpdateInterval = 32;
 	}
 
@@ -63,24 +54,6 @@ public class Player : PlayerBehavior
 		}
 
 		MovePlayer();
-
-		// Switch isRunning to the PlayerCharacterController
-
-		/*if (networkObject.IsOwner)
-		{
-			networkObject.isRunning = Input.GetKey(KeyCode.LeftShift);
-			runSlider.value = runEnergy;
-
-			if (runEnergy < 0 && !clientRanOutOfRun)
-			{
-				runSlider.transform.GetChild(2).GetComponentInChildren<Image>().color = Color.red;
-				clientRanOutOfRun = true;
-			}else if (clientRanOutOfRun && runEnergy > maxRunEnergy / 4)
-			{
-				runSlider.transform.GetChild(2).GetComponentInChildren<Image>().color = Color.white;
-				clientRanOutOfRun = false;
-			}
-		}*/
 	}
 
 	private void RestoreRunEnergy()
@@ -140,30 +113,6 @@ public class Player : PlayerBehavior
 		networkObject.position = transform.position;
 		networkObject.rotation = transform.rotation;
 	}
-
-	public void GetPlayerName()
-	{
-		Name = PlayerPrefs.GetString("PlayerName");
-
-		networkObject.SendRpc(RPC_UPDATE_NAME, Receivers.AllBuffered, Name);
-	}
-
-	public override void UpdateName(RpcArgs args)
-	{
-		Debug.Log("called update name");
-		Name = args.GetNext<string>();
-
-		namePlate.text = Name;
-		namePlate.gameObject.transform.parent.gameObject.SetActive(true);
-	}
-
-	/*public override void SetPlayersPosAndRot(RpcArgs args)
-	{
-		if (networkObject.IsOwner && !networkObject.IsServer)
-		{
-			runEnergy = args.GetNext<float>();
-		}
-	}*/
 
 	public override void PlayerJump(RpcArgs args)
 	{
@@ -228,9 +177,11 @@ public class Player : PlayerBehavior
 		});
 	}
 
-	/*public override void UpdatePlayerTeam(RpcArgs args)
+	public override void UpdatePlayersNameForClients(RpcArgs args)
 	{
-		IsBlueTeam = args.GetNext<bool>();
-		Debug.Log("Is blue team: " + IsBlueTeam);
-	}*/
+		Name = args.GetNext<string>();
+
+		namePlateHolder.gameObject.SetActive(true);
+		GetComponentInChildren<TextMesh>().text = Name;
+	}
 }

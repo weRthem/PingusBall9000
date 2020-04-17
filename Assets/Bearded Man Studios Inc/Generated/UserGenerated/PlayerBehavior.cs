@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"string\"][]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\"][]]")]
+	[GeneratedRPC("{\"types\":[[][\"string\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[][\"name\"]]")]
 	public abstract partial class PlayerBehavior : NetworkBehavior
 	{
-		public const byte RPC_UPDATE_NAME = 0 + 5;
-		public const byte RPC_PLAYER_JUMP = 1 + 5;
+		public const byte RPC_PLAYER_JUMP = 0 + 5;
+		public const byte RPC_UPDATE_PLAYERS_NAME_FOR_CLIENTS = 1 + 5;
 		
 		public PlayerNetworkObject networkObject = null;
 
@@ -23,8 +23,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("UpdateName", UpdateName, typeof(string));
 			networkObject.RegisterRpc("PlayerJump", PlayerJump);
+			networkObject.RegisterRpc("UpdatePlayersNameForClients", UpdatePlayersNameForClients, typeof(string));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -103,13 +103,12 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		/// <summary>
 		/// Arguments:
-		/// string playerName
 		/// </summary>
-		public abstract void UpdateName(RpcArgs args);
+		public abstract void PlayerJump(RpcArgs args);
 		/// <summary>
 		/// Arguments:
 		/// </summary>
-		public abstract void PlayerJump(RpcArgs args);
+		public abstract void UpdatePlayersNameForClients(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

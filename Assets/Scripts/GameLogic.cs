@@ -41,9 +41,8 @@ public class GameLogic : GameLogicBehavior
 
 			playerComponent.playerCharacterController = pcc;
 
-			// not sending?
 			pcc.MyPlayerAvatar = playerComponent;
-			//pcc.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_GIVE_OWNER_TO_PLAYER, Receivers.AllBuffered, playerComponent.networkObject.NetworkId);
+			pcc.GetPlayersName();
 		}
 
 		NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34d43c86c36f68a4bb122db5f319e2db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localPlayer: {fileID: 0}
+  playerNamePlateHolder: {fileID: 0}
 --- !u!1 &2059061421853014337
 GameObject:
   m_ObjectHideFlags: 0
