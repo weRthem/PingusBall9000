@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Unity;
@@ -10,6 +11,11 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 	public static PlayerCharacterController localPlayer = null;
 	public Player MyPlayerAvatar { get; set; }
 	public string playerName { get; private set; } = "";
+
+	[SerializeField] Slider runSlider = null;
+	[SerializeField] Image sliderHandle = null;
+
+	private bool hasRunOutOfRun = false;
 
 	private void Start()
 	{
@@ -28,7 +34,21 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 		if (networkObject.IsOwner)
 		{
 			PlayerJump();
+			runSlider.value = MyPlayerAvatar.networkObject.runEnergy;
+
+			if (MyPlayerAvatar.networkObject.runEnergy < 0 && !hasRunOutOfRun)
+			{
+				hasRunOutOfRun = true;
+				sliderHandle.color = Color.red;
+			}else if (MyPlayerAvatar.networkObject.runEnergy > runSlider.maxValue / 4 && hasRunOutOfRun)
+			{
+				hasRunOutOfRun = false;
+				sliderHandle.color = Color.white;
+			}
+
 		}
+
+
 		else if (transform.GetChild(0).gameObject.activeInHierarchy)
 		{
 			transform.GetChild(0).gameObject.SetActive(false);
@@ -42,6 +62,7 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 		if (networkObject.IsOwner)
 		{
 			PlayerMovement();
+			networkObject.isPressingShift = Input.GetKey(KeyCode.LeftShift);
 		}
 	}
 

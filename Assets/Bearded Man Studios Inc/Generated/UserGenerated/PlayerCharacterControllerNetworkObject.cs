@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.15,0.15,0.15]")]
+	[GeneratedInterpol("{\"inter\":[0.15,0.15,0.15,0]")]
 	public partial class PlayerCharacterControllerNetworkObject : NetworkObject
 	{
 		public const int IDENTITY = 7;
@@ -108,6 +108,37 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (mouseXChanged != null) mouseXChanged(_mouseX, timestep);
 			if (fieldAltered != null) fieldAltered("mouseX", _mouseX, timestep);
 		}
+		[ForgeGeneratedField]
+		private bool _isPressingShift;
+		public event FieldEvent<bool> isPressingShiftChanged;
+		public Interpolated<bool> isPressingShiftInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
+		public bool isPressingShift
+		{
+			get { return _isPressingShift; }
+			set
+			{
+				// Don't do anything if the value is the same
+				if (_isPressingShift == value)
+					return;
+
+				// Mark the field as dirty for the network to transmit
+				_dirtyFields[0] |= 0x8;
+				_isPressingShift = value;
+				hasDirtyFields = true;
+			}
+		}
+
+		public void SetisPressingShiftDirty()
+		{
+			_dirtyFields[0] |= 0x8;
+			hasDirtyFields = true;
+		}
+
+		private void RunChange_isPressingShift(ulong timestep)
+		{
+			if (isPressingShiftChanged != null) isPressingShiftChanged(_isPressingShift, timestep);
+			if (fieldAltered != null) fieldAltered("isPressingShift", _isPressingShift, timestep);
+		}
 
 		protected override void OwnershipChanged()
 		{
@@ -120,6 +151,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			horizontalAxisInterpolation.current = horizontalAxisInterpolation.target;
 			verticalAxisInterpolation.current = verticalAxisInterpolation.target;
 			mouseXInterpolation.current = mouseXInterpolation.target;
+			isPressingShiftInterpolation.current = isPressingShiftInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -129,6 +161,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			UnityObjectMapper.Instance.MapBytes(data, _horizontalAxis);
 			UnityObjectMapper.Instance.MapBytes(data, _verticalAxis);
 			UnityObjectMapper.Instance.MapBytes(data, _mouseX);
+			UnityObjectMapper.Instance.MapBytes(data, _isPressingShift);
 
 			return data;
 		}
@@ -147,6 +180,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			mouseXInterpolation.current = _mouseX;
 			mouseXInterpolation.target = _mouseX;
 			RunChange_mouseX(timestep);
+			_isPressingShift = UnityObjectMapper.Instance.Map<bool>(payload);
+			isPressingShiftInterpolation.current = _isPressingShift;
+			isPressingShiftInterpolation.target = _isPressingShift;
+			RunChange_isPressingShift(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -160,6 +197,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _verticalAxis);
 			if ((0x4 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _mouseX);
+			if ((0x8 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isPressingShift);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -215,6 +254,19 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_mouseX(timestep);
 				}
 			}
+			if ((0x8 & readDirtyFlags[0]) != 0)
+			{
+				if (isPressingShiftInterpolation.Enabled)
+				{
+					isPressingShiftInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
+					isPressingShiftInterpolation.Timestep = timestep;
+				}
+				else
+				{
+					_isPressingShift = UnityObjectMapper.Instance.Map<bool>(data);
+					RunChange_isPressingShift(timestep);
+				}
+			}
 		}
 
 		public override void InterpolateUpdate()
@@ -236,6 +288,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_mouseX = (float)mouseXInterpolation.Interpolate();
 				//RunChange_mouseX(mouseXInterpolation.Timestep);
+			}
+			if (isPressingShiftInterpolation.Enabled && !isPressingShiftInterpolation.current.UnityNear(isPressingShiftInterpolation.target, 0.0015f))
+			{
+				_isPressingShift = (bool)isPressingShiftInterpolation.Interpolate();
+				//RunChange_isPressingShift(isPressingShiftInterpolation.Timestep);
 			}
 		}
 

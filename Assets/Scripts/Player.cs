@@ -80,7 +80,7 @@ public class Player : PlayerBehavior
 		horizontalAxis = Mathf.Clamp(horizontalAxis, -1f, 1f);
 		verticalAxis = Mathf.Clamp(verticalAxis, -1f, 1f);
 
-		bool canRun = networkObject.isRunning && runEnergy > 0;
+		bool canRun = playerCharacterController.networkObject.isPressingShift && runEnergy > 0;
 		bool isNotStandingStill = Mathf.Abs(horizontalAxis) > Mathf.Epsilon || Mathf.Abs(verticalAxis) > Mathf.Epsilon;
 
 		if (canRun && isNotStandingStill && !serverRanOutOfRun)
@@ -98,6 +98,8 @@ public class Player : PlayerBehavior
 		{
 			RestoreRunEnergy();
 		}
+
+		networkObject.runEnergy = runEnergy;
 
 		Vector3 forwardVector = transform.forward * verticalAxis * moveSpeed;
 		Vector3 sidewaysVector = transform.right * horizontalAxis * moveSpeed;

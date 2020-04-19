@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.15,0.15,0,0]")]
+	[GeneratedInterpol("{\"inter\":[0.15,0.15,0,0,0]")]
 	public partial class PlayerNetworkObject : NetworkObject
 	{
 		public const int IDENTITY = 10;
@@ -139,6 +139,37 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (isBlueTeamChanged != null) isBlueTeamChanged(_isBlueTeam, timestep);
 			if (fieldAltered != null) fieldAltered("isBlueTeam", _isBlueTeam, timestep);
 		}
+		[ForgeGeneratedField]
+		private float _runEnergy;
+		public event FieldEvent<float> runEnergyChanged;
+		public InterpolateFloat runEnergyInterpolation = new InterpolateFloat() { LerpT = 0f, Enabled = false };
+		public float runEnergy
+		{
+			get { return _runEnergy; }
+			set
+			{
+				// Don't do anything if the value is the same
+				if (_runEnergy == value)
+					return;
+
+				// Mark the field as dirty for the network to transmit
+				_dirtyFields[0] |= 0x10;
+				_runEnergy = value;
+				hasDirtyFields = true;
+			}
+		}
+
+		public void SetrunEnergyDirty()
+		{
+			_dirtyFields[0] |= 0x10;
+			hasDirtyFields = true;
+		}
+
+		private void RunChange_runEnergy(ulong timestep)
+		{
+			if (runEnergyChanged != null) runEnergyChanged(_runEnergy, timestep);
+			if (fieldAltered != null) fieldAltered("runEnergy", _runEnergy, timestep);
+		}
 
 		protected override void OwnershipChanged()
 		{
@@ -152,6 +183,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			rotationInterpolation.current = rotationInterpolation.target;
 			isRunningInterpolation.current = isRunningInterpolation.target;
 			isBlueTeamInterpolation.current = isBlueTeamInterpolation.target;
+			runEnergyInterpolation.current = runEnergyInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -162,6 +194,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			UnityObjectMapper.Instance.MapBytes(data, _rotation);
 			UnityObjectMapper.Instance.MapBytes(data, _isRunning);
 			UnityObjectMapper.Instance.MapBytes(data, _isBlueTeam);
+			UnityObjectMapper.Instance.MapBytes(data, _runEnergy);
 
 			return data;
 		}
@@ -184,6 +217,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			isBlueTeamInterpolation.current = _isBlueTeam;
 			isBlueTeamInterpolation.target = _isBlueTeam;
 			RunChange_isBlueTeam(timestep);
+			_runEnergy = UnityObjectMapper.Instance.Map<float>(payload);
+			runEnergyInterpolation.current = _runEnergy;
+			runEnergyInterpolation.target = _runEnergy;
+			RunChange_runEnergy(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -199,6 +236,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isRunning);
 			if ((0x8 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isBlueTeam);
+			if ((0x10 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _runEnergy);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -267,6 +306,19 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_isBlueTeam(timestep);
 				}
 			}
+			if ((0x10 & readDirtyFlags[0]) != 0)
+			{
+				if (runEnergyInterpolation.Enabled)
+				{
+					runEnergyInterpolation.target = UnityObjectMapper.Instance.Map<float>(data);
+					runEnergyInterpolation.Timestep = timestep;
+				}
+				else
+				{
+					_runEnergy = UnityObjectMapper.Instance.Map<float>(data);
+					RunChange_runEnergy(timestep);
+				}
+			}
 		}
 
 		public override void InterpolateUpdate()
@@ -293,6 +345,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_isBlueTeam = (bool)isBlueTeamInterpolation.Interpolate();
 				//RunChange_isBlueTeam(isBlueTeamInterpolation.Timestep);
+			}
+			if (runEnergyInterpolation.Enabled && !runEnergyInterpolation.current.UnityNear(runEnergyInterpolation.target, 0.0015f))
+			{
+				_runEnergy = (float)runEnergyInterpolation.Interpolate();
+				//RunChange_runEnergy(runEnergyInterpolation.Timestep);
 			}
 		}
 

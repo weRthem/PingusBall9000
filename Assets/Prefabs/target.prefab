@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34d43c86c36f68a4bb122db5f319e2db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerNamePlateHolder: {fileID: 0}
+  runSlider: {fileID: 3247240951079057111}
+  sliderHandle: {fileID: 6220398854312749151}
 --- !u!1 &2059061421853014337
 GameObject:
   m_ObjectHideFlags: 0
