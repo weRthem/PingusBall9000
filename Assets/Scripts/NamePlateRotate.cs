@@ -21,6 +21,7 @@ public class NamePlateRotate : MonoBehaviour
 			GetComponentInChildren<TextMesh>().color = orangeColor;
 		}*/
 
+		Debug.Log(PlayerCharacterController.localPlayer);
 		transform.LookAt(PlayerCharacterController.localPlayer.GetComponentInChildren<Camera>().transform);
     }
 }

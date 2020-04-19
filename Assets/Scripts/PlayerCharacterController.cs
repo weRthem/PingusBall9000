@@ -94,49 +94,60 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 
 	public override void GiveOwnerToPlayer(RpcArgs args)
 	{
-		uint playerID = args.GetNext<uint>();
-
-		Player[] players = FindObjectsOfType<Player>();
-
-		Debug.Log(playerID);
-		localPlayer = this;
-
-		foreach (Player p in players)
+		MainThreadManager.Run(() =>
 		{
-			Debug.Log(p.networkObject.NetworkId);
+			uint playerID = args.GetNext<uint>();
 
-			if (p.networkObject.NetworkId == playerID)
+			Player[] players = FindObjectsOfType<Player>();
+
+			Debug.Log(playerID);
+
+			foreach (Player p in players)
 			{
-				MyPlayerAvatar = p;
-				break;
-			}
-		}
+				Debug.Log(p.networkObject.NetworkId);
 
-		if (networkObject.IsOwner)
-		{
-			transform.GetChild(0).gameObject.SetActive(true);
-			transform.GetChild(1).gameObject.SetActive(true);
-			GetPlayersName();
-		}
+				if (p.networkObject.NetworkId == playerID)
+				{
+					MyPlayerAvatar = p;
+					break;
+				}
+			}
+
+			if (networkObject.IsOwner)
+			{
+				transform.GetChild(0).gameObject.SetActive(true);
+				transform.GetChild(1).gameObject.SetActive(true);
+				GetPlayersName();
+				localPlayer = this;
+			}
+		});
 	}
 
 	public override void DestroyPlayer(RpcArgs args)
 	{
-		NetworkManager.Instance.Networker.NetworkObjectList.Remove(MyPlayerAvatar.networkObject);
-		MyPlayerAvatar.networkObject.Destroy();
-		NetworkManager.Instance.Networker.NetworkObjectList.Remove(networkObject);
-		networkObject.Destroy();
+		MainThreadManager.Run(() => 
+		{
+			NetworkManager.Instance.Networker.NetworkObjectList.Remove(MyPlayerAvatar.networkObject);
+			MyPlayerAvatar.networkObject.Destroy();
+			NetworkManager.Instance.Networker.NetworkObjectList.Remove(networkObject);
+			networkObject.Destroy();
+		});
+
 	}
 
 	public override void SendPlayerNameToAllClients(RpcArgs args)
 	{
 
-		Debug.Log("you");
+		MainThreadManager.Run(() =>
+		{
+			Debug.Log("you");
 
-		playerName = args.GetNext<string>();
-		MyPlayerAvatar.namePlateHolder.SetActive(true);
-		MyPlayerAvatar.namePlateHolder.GetComponentInChildren<TextMesh>().text = playerName;
-		// Send RPCs out to all buffered
-		MyPlayerAvatar.networkObject.SendRpc(Player.RPC_UPDATE_PLAYERS_NAME_FOR_CLIENTS, Receivers.AllBuffered, playerName);
+			playerName = args.GetNext<string>();
+			MyPlayerAvatar.namePlateHolder.SetActive(true);
+			MyPlayerAvatar.namePlateHolder.GetComponentInChildren<TextMesh>().text = playerName;
+			// Send RPCs out to all buffered
+			MyPlayerAvatar.networkObject.SendRpc(Player.RPC_UPDATE_PLAYERS_NAME_FOR_CLIENTS, Receivers.AllBuffered, playerName);
+		});
+
 	}
 }

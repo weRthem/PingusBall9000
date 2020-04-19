@@ -40,7 +40,7 @@ public class GameLogic : GameLogicBehavior
 			PlayerCharacterController pcc = newPlayerController.GetComponent<PlayerCharacterController>();
 
 			playerComponent.playerCharacterController = pcc;
-
+			PlayerCharacterController.localPlayer = pcc;
 			pcc.MyPlayerAvatar = playerComponent;
 			pcc.GetPlayersName();
 		}
