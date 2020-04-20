@@ -62,6 +62,16 @@ public class MultiplayerMenu : MonoBehaviour
 			NetWorker.localServerLocated += LocalServerLocated;
 			NetWorker.RefreshLocalUdpListings(ushort.Parse(portNumber.text));
 		}
+
+
+		string[] args = System.Environment.GetCommandLineArgs();
+		for (int i = 0; i < args.Length; i++)
+		{
+			if (args[i] == "-autoHost")
+			{
+				Host();
+			}
+		}
 	}
 
 	private void LocalServerLocated(NetWorker.BroadcastEndpoints endpoint, NetWorker sender)
