@@ -21,9 +21,7 @@ public class Player : PlayerBehavior
 	private bool clientRanOutOfRun = false;
 	private bool serverRanOutOfRun = false;
 
-	private int blueTeamCount = 0;
-	private int orangeTeamCount = 0;
-	public bool IsBlueTeam = false;
+	public bool IsBlueTeam { get; set; } = false;
 
 	protected override void NetworkStart()
 	{
@@ -31,8 +29,13 @@ public class Player : PlayerBehavior
 
 		if (networkObject.IsServer)
 		{
+			networkObject.isBlueTeam = IsBlueTeam;
 			runEnergy = maxRunEnergy;
 			NetworkManager.Instance.Networker.playerAccepted += PlayerJoined;
+		}
+		else
+		{
+			Invoke("GetTeam", 0.1f);
 		}
 
 		NetworkManager.Instance.Networker.disconnected += OnDisconnected;
@@ -46,6 +49,12 @@ public class Player : PlayerBehavior
 		{
 			transform.position = networkObject.position;
 			transform.rotation = networkObject.rotation;
+
+			if (IsBlueTeam != networkObject.isBlueTeam)
+			{
+				GetTeam();
+			}
+
 			if (GetComponent<Rigidbody>())
 			{
 				Destroy(GetComponent<Rigidbody>());
@@ -54,6 +63,11 @@ public class Player : PlayerBehavior
 		}
 
 		MovePlayer();
+	}
+
+	private void GetTeam()
+	{
+		IsBlueTeam = networkObject.isBlueTeam;
 	}
 
 	private void RestoreRunEnergy()
@@ -150,18 +164,6 @@ public class Player : PlayerBehavior
 	{
 		NetworkManager.Instance.Networker.playerAccepted -= PlayerJoined;
 		NetworkManager.Instance.Networker.disconnected -= OnDisconnected;
-
-		if (networkObject.IsServer)
-		{
-			if (IsBlueTeam)
-			{
-				blueTeamCount--;
-			}
-			else
-			{
-				orangeTeamCount--;
-			}
-		}
 
 		MainThreadManager.Run(() =>
 		{

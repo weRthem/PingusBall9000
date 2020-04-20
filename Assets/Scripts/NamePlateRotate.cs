@@ -11,7 +11,7 @@ public class NamePlateRotate : MonoBehaviour
     {
 		if (!PlayerCharacterController.localPlayer) return;
 
-		/*Player myPlayer = GetComponentInParent<Player>();
+		Player myPlayer = GetComponentInParent<Player>();
 		if (myPlayer.IsBlueTeam)
 		{
 			GetComponentInChildren<TextMesh>().color = blueColor;
@@ -19,7 +19,7 @@ public class NamePlateRotate : MonoBehaviour
 		else
 		{
 			GetComponentInChildren<TextMesh>().color = orangeColor;
-		}*/
+		}
 
 		Debug.Log(PlayerCharacterController.localPlayer);
 		transform.LookAt(PlayerCharacterController.localPlayer.GetComponentInChildren<Camera>().transform);

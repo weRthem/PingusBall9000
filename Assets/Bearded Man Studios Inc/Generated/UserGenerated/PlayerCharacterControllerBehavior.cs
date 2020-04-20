@@ -8,7 +8,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 	[GeneratedRPCVariableNames("{\"types\":[[\"playerAvatarNetworkID\"][][\"Name\"]]")]
 	public abstract partial class PlayerCharacterControllerBehavior : NetworkBehavior
 	{
-		public const byte RPC_GIVE_OWNER_TO_PLAYER = 0 + 5;
+		public const byte RPC_SET_UP_NEW_PLAYER = 0 + 5;
 		public const byte RPC_DESTROY_PLAYER = 1 + 5;
 		public const byte RPC_SEND_PLAYER_NAME_TO_ALL_CLIENTS = 2 + 5;
 		
@@ -24,7 +24,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("GiveOwnerToPlayer", GiveOwnerToPlayer, typeof(uint));
+			networkObject.RegisterRpc("SetUpNewPlayer", SetUpNewPlayer, typeof(uint));
 			networkObject.RegisterRpc("DestroyPlayer", DestroyPlayer);
 			networkObject.RegisterRpc("SendPlayerNameToAllClients", SendPlayerNameToAllClients, typeof(string));
 
@@ -107,7 +107,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// Arguments:
 		/// uint playerAvatarNetworkID
 		/// </summary>
-		public abstract void GiveOwnerToPlayer(RpcArgs args);
+		public abstract void SetUpNewPlayer(RpcArgs args);
 		/// <summary>
 		/// Arguments:
 		/// </summary>

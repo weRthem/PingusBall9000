@@ -12,8 +12,11 @@ public class GameLogic : GameLogicBehavior
 	[SerializeField] Text OrangeScoreText;
 	[SerializeField] Text BlueScoreText;
 
-	private int blueScore = 0;
-	private int orangeScore = 0;
+	private uint blueScore = 0;
+	private uint orangeScore = 0;
+
+	private uint bluePlayers = 0;
+	private uint orangePlayers = 0;
 
 	public static GameLogic Instance;
 	// Start is called before the first frame update
@@ -21,7 +24,6 @@ public class GameLogic : GameLogicBehavior
     {
 		QualitySettings.vSyncCount = 1;
 		Instance = this;
-
     }
 
 	protected override void NetworkStart()
@@ -39,6 +41,10 @@ public class GameLogic : GameLogicBehavior
 			Player playerComponent = newPlayer.GetComponent<Player>();
 			PlayerCharacterController pcc = newPlayerController.GetComponent<PlayerCharacterController>();
 
+			playerComponent.IsBlueTeam = true;
+			bluePlayers++;
+			Debug.Log("Added a blue Player. Blue player count: " + bluePlayers);
+
 			playerComponent.playerCharacterController = pcc;
 			PlayerCharacterController.localPlayer = pcc;
 			pcc.MyPlayerAvatar = playerComponent;
@@ -46,6 +52,18 @@ public class GameLogic : GameLogicBehavior
 		}
 
 		NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;
+	}
+
+	public void PlayerDisconnected(bool playerWasBlueTeam)
+	{
+		if (playerWasBlueTeam)
+		{
+			bluePlayers--;
+		}
+		else
+		{
+			orangePlayers--;
+		}
 	}
 
 	public override void PlayerScored(RpcArgs args)
@@ -65,6 +83,22 @@ public class GameLogic : GameLogicBehavior
 		}
 
 		scoreLabel.text = playerName + " scored the last point";
+	}
+
+	public override void PlayerDisconnected(RpcArgs args)
+	{
+		bool playerWasBlueTeam = args.GetNext<bool>();
+
+		if (playerWasBlueTeam)
+		{
+			bluePlayers--;
+		}
+		else
+		{
+			orangePlayers--;
+		}
+
+		Debug.Log("Orange Players: " + orangePlayers + " Blue Players: " + bluePlayers);
 	}
 
 	private void DisconnectPlayer(NetworkingPlayer player, NetWorker sender)
@@ -104,11 +138,24 @@ public class GameLogic : GameLogicBehavior
 			Player playerComponent = newPlayer.GetComponent<Player>();
 			PlayerCharacterController pcc = newPlayerController.GetComponent<PlayerCharacterController>();
 
+			if (bluePlayers > orangePlayers)
+			{
+				playerComponent.IsBlueTeam = false;
+				orangePlayers++;
+				Debug.Log("Added a orange Player. orange player count: " + orangePlayers);
+			}
+			else
+			{
+				playerComponent.IsBlueTeam = true;
+				bluePlayers++;
+				Debug.Log("Added a blue Player. Blue player count: " + bluePlayers);
+			}
+
 			playerComponent.playerCharacterController = pcc;
 			pcc.MyPlayerAvatar = playerComponent;
 
 			pcc.networkObject.AssignOwnership(player);
-			pcc.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_GIVE_OWNER_TO_PLAYER, Receivers.AllBuffered, playerComponent.networkObject.NetworkId);
+			pcc.networkObject.SendRpc(PlayerCharacterControllerBehavior.RPC_SET_UP_NEW_PLAYER, Receivers.AllBuffered, playerComponent.networkObject.NetworkId);
 		});
 	}
 }

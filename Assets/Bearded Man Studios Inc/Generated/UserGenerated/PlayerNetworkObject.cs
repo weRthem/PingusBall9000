@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.15,0.15,0,0,0]")]
+	[GeneratedInterpol("{\"inter\":[0.15,0.15,0,0]")]
 	public partial class PlayerNetworkObject : NetworkObject
 	{
-		public const int IDENTITY = 10;
+		public const int IDENTITY = 8;
 
 		private byte[] _dirtyFields = new byte[1];
 
@@ -78,37 +78,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (fieldAltered != null) fieldAltered("rotation", _rotation, timestep);
 		}
 		[ForgeGeneratedField]
-		private bool _isRunning;
-		public event FieldEvent<bool> isRunningChanged;
-		public Interpolated<bool> isRunningInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
-		public bool isRunning
-		{
-			get { return _isRunning; }
-			set
-			{
-				// Don't do anything if the value is the same
-				if (_isRunning == value)
-					return;
-
-				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x4;
-				_isRunning = value;
-				hasDirtyFields = true;
-			}
-		}
-
-		public void SetisRunningDirty()
-		{
-			_dirtyFields[0] |= 0x4;
-			hasDirtyFields = true;
-		}
-
-		private void RunChange_isRunning(ulong timestep)
-		{
-			if (isRunningChanged != null) isRunningChanged(_isRunning, timestep);
-			if (fieldAltered != null) fieldAltered("isRunning", _isRunning, timestep);
-		}
-		[ForgeGeneratedField]
 		private bool _isBlueTeam;
 		public event FieldEvent<bool> isBlueTeamChanged;
 		public Interpolated<bool> isBlueTeamInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
@@ -122,7 +91,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					return;
 
 				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x8;
+				_dirtyFields[0] |= 0x4;
 				_isBlueTeam = value;
 				hasDirtyFields = true;
 			}
@@ -130,7 +99,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public void SetisBlueTeamDirty()
 		{
-			_dirtyFields[0] |= 0x8;
+			_dirtyFields[0] |= 0x4;
 			hasDirtyFields = true;
 		}
 
@@ -153,7 +122,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					return;
 
 				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x10;
+				_dirtyFields[0] |= 0x8;
 				_runEnergy = value;
 				hasDirtyFields = true;
 			}
@@ -161,7 +130,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public void SetrunEnergyDirty()
 		{
-			_dirtyFields[0] |= 0x10;
+			_dirtyFields[0] |= 0x8;
 			hasDirtyFields = true;
 		}
 
@@ -181,7 +150,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		{
 			positionInterpolation.current = positionInterpolation.target;
 			rotationInterpolation.current = rotationInterpolation.target;
-			isRunningInterpolation.current = isRunningInterpolation.target;
 			isBlueTeamInterpolation.current = isBlueTeamInterpolation.target;
 			runEnergyInterpolation.current = runEnergyInterpolation.target;
 		}
@@ -192,7 +160,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		{
 			UnityObjectMapper.Instance.MapBytes(data, _position);
 			UnityObjectMapper.Instance.MapBytes(data, _rotation);
-			UnityObjectMapper.Instance.MapBytes(data, _isRunning);
 			UnityObjectMapper.Instance.MapBytes(data, _isBlueTeam);
 			UnityObjectMapper.Instance.MapBytes(data, _runEnergy);
 
@@ -209,10 +176,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			rotationInterpolation.current = _rotation;
 			rotationInterpolation.target = _rotation;
 			RunChange_rotation(timestep);
-			_isRunning = UnityObjectMapper.Instance.Map<bool>(payload);
-			isRunningInterpolation.current = _isRunning;
-			isRunningInterpolation.target = _isRunning;
-			RunChange_isRunning(timestep);
 			_isBlueTeam = UnityObjectMapper.Instance.Map<bool>(payload);
 			isBlueTeamInterpolation.current = _isBlueTeam;
 			isBlueTeamInterpolation.target = _isBlueTeam;
@@ -233,10 +196,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if ((0x2 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _rotation);
 			if ((0x4 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isRunning);
-			if ((0x8 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _isBlueTeam);
-			if ((0x10 & _dirtyFields[0]) != 0)
+			if ((0x8 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _runEnergy);
 
 			// Reset all the dirty fields
@@ -282,19 +243,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			}
 			if ((0x4 & readDirtyFlags[0]) != 0)
 			{
-				if (isRunningInterpolation.Enabled)
-				{
-					isRunningInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
-					isRunningInterpolation.Timestep = timestep;
-				}
-				else
-				{
-					_isRunning = UnityObjectMapper.Instance.Map<bool>(data);
-					RunChange_isRunning(timestep);
-				}
-			}
-			if ((0x8 & readDirtyFlags[0]) != 0)
-			{
 				if (isBlueTeamInterpolation.Enabled)
 				{
 					isBlueTeamInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
@@ -306,7 +254,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_isBlueTeam(timestep);
 				}
 			}
-			if ((0x10 & readDirtyFlags[0]) != 0)
+			if ((0x8 & readDirtyFlags[0]) != 0)
 			{
 				if (runEnergyInterpolation.Enabled)
 				{
@@ -335,11 +283,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_rotation = (Quaternion)rotationInterpolation.Interpolate();
 				//RunChange_rotation(rotationInterpolation.Timestep);
-			}
-			if (isRunningInterpolation.Enabled && !isRunningInterpolation.current.UnityNear(isRunningInterpolation.target, 0.0015f))
-			{
-				_isRunning = (bool)isRunningInterpolation.Interpolate();
-				//RunChange_isRunning(isRunningInterpolation.Timestep);
 			}
 			if (isBlueTeamInterpolation.Enabled && !isBlueTeamInterpolation.current.UnityNear(isBlueTeamInterpolation.target, 0.0015f))
 			{

@@ -80,11 +80,6 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 		MyPlayerAvatar.networkObject.SendRpc(PlayerBehavior.RPC_PLAYER_JUMP, Receivers.Server);
 	}
 
-	public void StartUpPlayer()
-	{
-		networkObject.SendRpc(RPC_GIVE_OWNER_TO_PLAYER, Receivers.AllBuffered, MyPlayerAvatar.networkObject.NetworkId);
-	}
-
 	public void GetPlayersName()
 	{
 		playerName = PlayerPrefs.GetString("PlayerName");
@@ -92,7 +87,7 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 		networkObject.SendRpc(RPC_SEND_PLAYER_NAME_TO_ALL_CLIENTS, Receivers.Server, playerName);
 	}
 
-	public override void GiveOwnerToPlayer(RpcArgs args)
+	public override void SetUpNewPlayer(RpcArgs args)
 	{
 		MainThreadManager.Run(() =>
 		{
@@ -127,6 +122,12 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 	{
 		MainThreadManager.Run(() => 
 		{
+			if (networkObject.IsServer)
+			{
+				Debug.Log("I am server");
+				GameLogic.Instance.PlayerDisconnected(MyPlayerAvatar.IsBlueTeam);
+				//GameLogic.Instance.networkObject.SendRpc(GameLogic.RPC_PLAYER_DISCONNECTED, Receivers.Server, MyPlayerAvatar.IsBlueTeam); GameLogic.Instance.networkObject.SendRpc(GameLogic.RPC_PLAYER_DISCONNECTED, Receivers.Server, MyPlayerAvatar.IsBlueTeam);
+			}
 			NetworkManager.Instance.Networker.NetworkObjectList.Remove(MyPlayerAvatar.networkObject);
 			MyPlayerAvatar.networkObject.Destroy();
 			NetworkManager.Instance.Networker.NetworkObjectList.Remove(networkObject);

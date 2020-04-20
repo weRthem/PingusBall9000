@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"string\", \"bool\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\", \"blueTeamScored\"]]")]
+	[GeneratedRPC("{\"types\":[[\"string\", \"bool\"][\"bool\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerName\", \"blueTeamScored\"][\"wasBlueTeam\"]]")]
 	public abstract partial class GameLogicBehavior : NetworkBehavior
 	{
 		public const byte RPC_PLAYER_SCORED = 0 + 5;
+		public const byte RPC_PLAYER_DISCONNECTED = 1 + 5;
 		
 		public GameLogicNetworkObject networkObject = null;
 
@@ -23,6 +24,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("PlayerScored", PlayerScored, typeof(string), typeof(bool));
+			networkObject.RegisterRpc("PlayerDisconnected", PlayerDisconnected, typeof(bool));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -105,6 +107,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// bool blueTeamScored
 		/// </summary>
 		public abstract void PlayerScored(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// bool wasBlueTeam
+		/// </summary>
+		public abstract void PlayerDisconnected(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}
