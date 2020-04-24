@@ -162,7 +162,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
 			else
 				Instantiate(networkManager).GetComponent<NetworkManager>().Initialize(networker);
 
-			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+			SceneManager.LoadScene(1);
 		}
 	}
 }

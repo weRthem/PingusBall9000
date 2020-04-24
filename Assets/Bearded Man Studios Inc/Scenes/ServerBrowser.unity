@@ -336,7 +336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a93ace8436dda2f46ba0a3e6bc0a3ed0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  masterServerHost: 127.0.0.1
+  masterServerHost: 192.168.0.15
   masterServerPort: 15940
   natServerHost: 
   natServerPort: 15941
