@@ -12,6 +12,9 @@ public class SetPlayerName : MonoBehaviour
     {
 		SceneManager.activeSceneChanged += SetName;
 		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		Application.targetFrameRate = 30;
+
 		if (!string.IsNullOrEmpty(PlayerPrefs.GetString("PlayerName")))
 		{
 			nameText.text = PlayerPrefs.GetString("PlayerName");
@@ -28,5 +31,10 @@ public class SetPlayerName : MonoBehaviour
 
 		PlayerPrefs.SetString("PlayerName", name);
 		PlayerPrefs.Save();
+	}
+
+	public void LoadServerBrowser()
+	{
+		SceneManager.LoadScene(2);
 	}
 }

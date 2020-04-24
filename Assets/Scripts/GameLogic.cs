@@ -22,6 +22,7 @@ public class GameLogic : GameLogicBehavior
 	// Start is called before the first frame update
 	void Start()
     {
+		Application.targetFrameRate = -1;
 		QualitySettings.vSyncCount = 1;
 		Instance = this;
     }
@@ -30,7 +31,8 @@ public class GameLogic : GameLogicBehavior
 	{
 		base.NetworkStart();
 
-
+		Application.targetFrameRate = 60;
+		
 		if (networkObject.IsServer)
 		{
 			NetworkManager.Instance.Networker.playerAccepted += PlayerConnected;
