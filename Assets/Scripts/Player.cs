@@ -183,10 +183,11 @@ public class Player : PlayerBehavior
 
 	public override void UpdatePlayersNameForClients(RpcArgs args)
 	{
-
-		Name = args.GetNext<string>();
-
-		namePlateHolder.gameObject.SetActive(true);
-		GetComponentInChildren<TextMesh>().text = Name;
+		MainThreadManager.Run(() =>
+		{
+			Name = args.GetNext<string>();
+			namePlateHolder.gameObject.SetActive(true);
+			GetComponentInChildren<TextMesh>().text = Name;
+		});
 	}
 }
