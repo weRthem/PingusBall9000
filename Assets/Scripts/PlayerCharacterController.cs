@@ -26,6 +26,8 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 	{
 		base.NetworkStart();
 
+		// TODO send RPC to all through the player script that updates the material and applies the correct Monobehaviour to them as well
+
 		networkObject.UpdateInterval = 16;
 	}
 
@@ -149,6 +151,5 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 			// Send RPCs out to all buffered
 			MyPlayerAvatar.networkObject.SendRpc(Player.RPC_UPDATE_PLAYERS_NAME_FOR_CLIENTS, Receivers.AllBuffered, playerName);
 		});
-
 	}
 }

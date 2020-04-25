@@ -4,12 +4,14 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[][\"string\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[][\"name\"]]")]
+	[GeneratedRPC("{\"types\":[[][\"string\"][\"Vector3\", \"Quaternion\"][\"Vector3\", \"Quaternion\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[][\"name\"][\"TargetStartPoint\", \"TargetStartRotation\"][\"TargetStartPoint\", \"TargetStartRotation\"]]")]
 	public abstract partial class PlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_PLAYER_JUMP = 0 + 5;
 		public const byte RPC_UPDATE_PLAYERS_NAME_FOR_CLIENTS = 1 + 5;
+		public const byte RPC_RIGHT_CLICK = 2 + 5;
+		public const byte RPC_LEFT_CLICK = 3 + 5;
 		
 		public PlayerNetworkObject networkObject = null;
 
@@ -25,6 +27,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("PlayerJump", PlayerJump);
 			networkObject.RegisterRpc("UpdatePlayersNameForClients", UpdatePlayersNameForClients, typeof(string));
+			networkObject.RegisterRpc("RightClick", RightClick, typeof(Vector3), typeof(Quaternion));
+			networkObject.RegisterRpc("LeftClick", LeftClick, typeof(Vector3), typeof(Quaternion));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -109,6 +113,14 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// Arguments:
 		/// </summary>
 		public abstract void UpdatePlayersNameForClients(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void RightClick(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void LeftClick(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

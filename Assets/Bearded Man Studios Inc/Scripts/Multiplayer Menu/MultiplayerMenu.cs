@@ -152,7 +152,7 @@ public class MultiplayerMenu : MonoBehaviour
 		}
 		else
 		{
-			server = new UDPServer(64);
+			server = new UDPServer(6);
 
 			if (natServerHost.Trim().Length == 0)
 				((UDPServer)server).Connect(ipAddress.text, ushort.Parse(portNumber.text));

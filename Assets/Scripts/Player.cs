@@ -17,11 +17,20 @@ public class Player : PlayerBehavior
 	[SerializeField] float runBoost = 2f;
 	[SerializeField] Slider runSlider = null;
 	[SerializeField] private float maxRunEnergy = 60f;
+	public PlayerClasses playerClasses;
+	private Dictionary<int, MonoBehaviour> testDict;
+
 	private float runEnergy = 0f;
 	private bool clientRanOutOfRun = false;
 	private bool serverRanOutOfRun = false;
 
 	public bool IsBlueTeam { get; set; } = false;
+
+	public delegate void RightClickMethods(Vector3 startPos, Quaternion startRot);
+	public RightClickMethods RightClickMethodsList;
+
+	public delegate void LeftClickMethods(Vector3 startPos, Quaternion startRot);
+	public LeftClickMethods LeftClickMethodsList;
 
 	protected override void NetworkStart()
 	{
@@ -189,5 +198,15 @@ public class Player : PlayerBehavior
 			namePlateHolder.gameObject.SetActive(true);
 			GetComponentInChildren<TextMesh>().text = Name;
 		});
+	}
+
+	public override void RightClick(RpcArgs args)
+	{
+		RightClickMethodsList(args.GetNext<Vector3>(), args.GetNext<Quaternion>());
+	}
+
+	public override void LeftClick(RpcArgs args)
+	{
+		LeftClickMethodsList(args.GetNext<Vector3>(), args.GetNext<Quaternion>());
 	}
 }
