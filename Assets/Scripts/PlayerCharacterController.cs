@@ -84,9 +84,11 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 
 	public void GetPlayersName()
 	{
-		playerName = PlayerPrefs.GetString("PlayerName");
+		playerName = PlayerPrefs.GetString(SetPlayerName.playerNameSave);
+		PlayableCharacters playerCharacter = (PlayableCharacters)PlayerPrefs.GetInt(SetPlayerName.characterTypeSave);
 		Debug.Log(playerName);
-		networkObject.SendRpc(RPC_SEND_PLAYER_NAME_TO_ALL_CLIENTS, Receivers.Server, playerName);
+		Debug.Log(playerCharacter);
+		networkObject.SendRpc(RPC_SEND_PLAYER_NAME_AND_CLASS_TO_ALL_CLIENTS, Receivers.Server, playerName, (int)playerCharacter);
 	}
 
 	public override void SetUpNewPlayer(RpcArgs args)
@@ -138,7 +140,7 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 
 	}
 
-	public override void SendPlayerNameToAllClients(RpcArgs args)
+	public override void SendPlayerNameAndClassToAllClients(RpcArgs args)
 	{
 
 		MainThreadManager.Run(() =>
@@ -148,8 +150,9 @@ public class PlayerCharacterController : PlayerCharacterControllerBehavior
 			playerName = args.GetNext<string>();
 			MyPlayerAvatar.namePlateHolder.SetActive(true);
 			MyPlayerAvatar.namePlateHolder.GetComponentInChildren<TextMesh>().text = playerName;
-			// Send RPCs out to all buffered
-			MyPlayerAvatar.networkObject.SendRpc(Player.RPC_UPDATE_PLAYERS_NAME_FOR_CLIENTS, Receivers.AllBuffered, playerName);
+			MyPlayerAvatar.SetPlayerClass((PlayableCharacters)args.GetNext<int>());
+			// Move this part to the Player to be called after setting up the character class
+			//MyPlayerAvatar.networkObject.SendRpc(Player.RPC_UPDATE_PLAYERS_NAME_FOR_CLIENTS, Receivers.AllBuffered, playerName);
 		});
 	}
 }

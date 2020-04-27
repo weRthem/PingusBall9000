@@ -512,6 +512,11 @@ MonoBehaviour:
   runBoost: 4
   runSlider: {fileID: 1362043898879939617}
   maxRunEnergy: 60
+  playerClasses:
+  - character: 0
+    characterClass: {fileID: 0}
+  - character: 1
+    characterClass: {fileID: 0}
 --- !u!1 &1602895972314077459
 GameObject:
   m_ObjectHideFlags: 0

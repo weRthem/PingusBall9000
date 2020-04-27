@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"uint\"][][\"string\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerAvatarNetworkID\"][][\"Name\"]]")]
+	[GeneratedRPC("{\"types\":[[\"uint\"][][\"string\", \"int\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerAvatarNetworkID\"][][\"Name\", \"PlayerClassEnum\"]]")]
 	public abstract partial class PlayerCharacterControllerBehavior : NetworkBehavior
 	{
 		public const byte RPC_SET_UP_NEW_PLAYER = 0 + 5;
 		public const byte RPC_DESTROY_PLAYER = 1 + 5;
-		public const byte RPC_SEND_PLAYER_NAME_TO_ALL_CLIENTS = 2 + 5;
+		public const byte RPC_SEND_PLAYER_NAME_AND_CLASS_TO_ALL_CLIENTS = 2 + 5;
 		
 		public PlayerCharacterControllerNetworkObject networkObject = null;
 
@@ -26,7 +26,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("SetUpNewPlayer", SetUpNewPlayer, typeof(uint));
 			networkObject.RegisterRpc("DestroyPlayer", DestroyPlayer);
-			networkObject.RegisterRpc("SendPlayerNameToAllClients", SendPlayerNameToAllClients, typeof(string));
+			networkObject.RegisterRpc("SendPlayerNameAndClassToAllClients", SendPlayerNameAndClassToAllClients, typeof(string), typeof(int));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -115,7 +115,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// <summary>
 		/// Arguments:
 		/// </summary>
-		public abstract void SendPlayerNameToAllClients(RpcArgs args);
+		public abstract void SendPlayerNameAndClassToAllClients(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

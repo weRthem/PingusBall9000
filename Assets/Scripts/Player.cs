@@ -17,8 +17,8 @@ public class Player : PlayerBehavior
 	[SerializeField] float runBoost = 2f;
 	[SerializeField] Slider runSlider = null;
 	[SerializeField] private float maxRunEnergy = 60f;
-	public PlayerClasses playerClasses;
-	private Dictionary<int, MonoBehaviour> testDict;
+	public PlayerClasses[] playerClasses;
+	private Dictionary<PlayableCharacters, MonoBehaviour> playerClassesDict;
 
 	private float runEnergy = 0f;
 	private bool clientRanOutOfRun = false;
@@ -41,6 +41,13 @@ public class Player : PlayerBehavior
 			networkObject.isBlueTeam = IsBlueTeam;
 			runEnergy = maxRunEnergy;
 			NetworkManager.Instance.Networker.playerAccepted += PlayerJoined;
+			for (int i = 0; i < playerClasses.Length; i++)
+			{
+				if (!playerClassesDict.ContainsKey(playerClasses[i].character))
+				{
+					playerClassesDict.Add(playerClasses[i].character, playerClasses[i].characterClass);
+				}
+			}
 		}
 		else
 		{
@@ -72,6 +79,17 @@ public class Player : PlayerBehavior
 		}
 
 		MovePlayer();
+	}
+
+	public void SetPlayerClass(PlayableCharacters character)
+	{
+		if (!playerClassesDict.ContainsKey(character)) return;
+
+		MonoBehaviour behaviour = playerClassesDict[character];
+
+		gameObject.AddComponent(behaviour.GetType());
+
+		// call method that sends rpc on this class to set the material for all clients buffered
 	}
 
 	private void GetTeam()
@@ -139,18 +157,6 @@ public class Player : PlayerBehavior
 		networkObject.rotation = transform.rotation;
 	}
 
-	public override void PlayerJump(RpcArgs args)
-	{
-		Ray ray = new Ray(transform.position, -Vector3.up);
-		RaycastHit hitInfo;
-		if (Physics.Raycast(ray, out hitInfo, 1.2f))
-		{
-			if (hitInfo.collider.gameObject.GetComponent<Player>()) return;
-
-			GetComponent<Rigidbody>().AddForce(0, jumpPower, 0);
-		}
-	}
-
 	private void PlayerJoined(NetworkingPlayer player, NetWorker sender)
 	{
 		/*if (!networkObject.IsServer) return;
@@ -190,6 +196,20 @@ public class Player : PlayerBehavior
 		});
 	}
 
+	#region RPCs
+
+	public override void PlayerJump(RpcArgs args)
+	{
+		Ray ray = new Ray(transform.position, -Vector3.up);
+		RaycastHit hitInfo;
+		if (Physics.Raycast(ray, out hitInfo, 1.2f))
+		{
+			if (hitInfo.collider.gameObject.GetComponent<Player>()) return;
+
+			GetComponent<Rigidbody>().AddForce(0, jumpPower, 0);
+		}
+	}
+
 	public override void UpdatePlayersNameForClients(RpcArgs args)
 	{
 		MainThreadManager.Run(() =>
@@ -209,4 +229,6 @@ public class Player : PlayerBehavior
 	{
 		LeftClickMethodsList(args.GetNext<Vector3>(), args.GetNext<Quaternion>());
 	}
+
+	#endregion
 }

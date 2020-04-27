@@ -6,8 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class SetPlayerName : MonoBehaviour
 {
+	public const string playerNameSave = "PlayerName", characterTypeSave = "Character";
+
 	[SerializeField] Text nameText;
-    // Start is called before the first frame update
+	// Start is called before the first frame update
+	private PlayableCharacters selectedCharacter = PlayableCharacters.DINGUS;
+
     void Start()
     {
 		SceneManager.activeSceneChanged += SetName;
@@ -29,12 +33,19 @@ public class SetPlayerName : MonoBehaviour
 			name = "Player" + Random.Range(0, 1000);
 		}
 
-		PlayerPrefs.SetString("PlayerName", name);
+		PlayerPrefs.SetString(playerNameSave, name);
+		PlayerPrefs.SetInt(characterTypeSave, (int)selectedCharacter);
 		PlayerPrefs.Save();
 	}
 
 	public void LoadServerBrowser()
 	{
 		SceneManager.LoadScene(2);
+	}
+
+	public void SetCharacter(PlayableCharacters newSelectedCharacter)
+	{
+		Debug.Log(newSelectedCharacter);
+		selectedCharacter = newSelectedCharacter;
 	}
 }
