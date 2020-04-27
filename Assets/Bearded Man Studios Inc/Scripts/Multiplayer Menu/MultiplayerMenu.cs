@@ -37,39 +37,40 @@ public class MultiplayerMenu : MonoBehaviour
 
 	private void Start()
 	{
-		ipAddress.text = "127.0.0.1";
-		portNumber.text = "25565";
-
-		for (int j = 0; j < ToggledButtons.Length; ++j)
-		{
-			Button btn = ToggledButtons[i].GetComponent<Button>();
-			if (btn != null)
-				_uiButtons.Add(btn);
-		}
-
-		if (!useTCP)
-		{
-			// Do any firewall opening requests on the operating system
-			NetWorker.PingForFirewall(ushort.Parse(portNumber.text));
-		}
-
-		if (useMainThreadManagerForRPCs)
-			Rpc.MainThreadRunner = MainThreadManager.Instance;
-
-		if (getLocalNetworkConnections)
-		{
-			NetWorker.localServerLocated += LocalServerLocated;
-			NetWorker.RefreshLocalUdpListings(ushort.Parse(portNumber.text));
-		}
-
 		string[] args = System.Environment.GetCommandLineArgs();
 		for (int i = 0; i < args.Length; i++)
 		{
 			if (args[i] == "-autoHost")
 			{
+				ipAddress.text = "127.0.0.1";
+				//portNumber.text = "15937";
+				portNumber.text = "25565";
+
+				for (int j = 0; j < ToggledButtons.Length; ++j)
+				{
+					Button btn = ToggledButtons[i].GetComponent<Button>();
+					if (btn != null)
+						_uiButtons.Add(btn);
+				}
+
+				if (!useTCP)
+				{
+					// Do any firewall opening requests on the operating system
+					NetWorker.PingForFirewall(ushort.Parse(portNumber.text));
+				}
+
+				if (useMainThreadManagerForRPCs)
+					Rpc.MainThreadRunner = MainThreadManager.Instance;
+
+				if (getLocalNetworkConnections)
+				{
+					NetWorker.localServerLocated += LocalServerLocated;
+					NetWorker.RefreshLocalUdpListings(ushort.Parse(portNumber.text));
+				}
+
 				Host();
 			}
-		}	
+		}
 	}
 
 	private void LocalServerLocated(NetWorker.BroadcastEndpoints endpoint, NetWorker sender)

@@ -37,7 +37,7 @@ public class GameLogic : GameLogicBehavior
 		{
 			NetworkManager.Instance.Networker.playerAccepted += PlayerConnected;
 
-			PlayerBehavior newPlayer = NetworkManager.Instance.InstantiatePlayer(position: new Vector3(0, 7, 0));
+			/*PlayerBehavior newPlayer = NetworkManager.Instance.InstantiatePlayer(position: new Vector3(0, 7, 0));
 			PlayerCharacterControllerBehavior newPlayerController = NetworkManager.Instance.InstantiatePlayerCharacterController(position: new Vector3(0, 0, 0));
 
 			Player playerComponent = newPlayer.GetComponent<Player>();
@@ -50,7 +50,7 @@ public class GameLogic : GameLogicBehavior
 			playerComponent.playerCharacterController = pcc;
 			PlayerCharacterController.localPlayer = pcc;
 			pcc.MyPlayerAvatar = playerComponent;
-			pcc.GetPlayersName();
+			pcc.GetPlayersName();*/
 		}
 
 		NetworkManager.Instance.Networker.playerDisconnected += DisconnectPlayer;
