@@ -40,7 +40,7 @@ public class MultiplayerMenu : MonoBehaviour
 		ipAddress.text = "127.0.0.1";
 		portNumber.text = "25565";
 
-		for (int j = 0; j < ToggledButtons.Length; ++j)
+		for (int i = 0; i < ToggledButtons.Length; ++i)
 		{
 			Button btn = ToggledButtons[i].GetComponent<Button>();
 			if (btn != null)
@@ -61,7 +61,7 @@ public class MultiplayerMenu : MonoBehaviour
 			NetWorker.localServerLocated += LocalServerLocated;
 			NetWorker.RefreshLocalUdpListings(ushort.Parse(portNumber.text));
 		}
-
+		
 		string[] args = System.Environment.GetCommandLineArgs();
 		for (int i = 0; i < args.Length; i++)
 		{
